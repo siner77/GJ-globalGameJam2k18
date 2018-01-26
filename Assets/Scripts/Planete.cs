@@ -15,6 +15,6 @@ public class Planete : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        this.gameObject.transform.Rotate(Vector3.forward * Time.deltaTime * _rotationParameter));
+        this.gameObject.transform.Rotate(Vector3.forward * Time.deltaTime * _rotationParameter);
     }
 }
