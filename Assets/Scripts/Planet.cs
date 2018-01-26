@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Planete : MonoBehaviour {
+public class Planet : MonoBehaviour {
 
     private float _rotationParameter = 5.0f;
     private List<Satellite> _satellistes = new List<Satellite>();
+    private List<EnemyShipController> _enemyShip = new List<EnemyShipController>();
+    private List<ShipController> _shipController = new List<ShipController>();
 
 
 	// Use this for initialization
