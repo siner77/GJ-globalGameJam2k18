@@ -1,24 +1,39 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 
-public class Planet : MonoBehaviour {
-
+public class Planet : MonoBehaviour
+{
+    [SerializeField]
     private float _rotationParameter = 5.0f;
+    [SerializeField]
+    private float _additionalOrbitRadius = 1.5f;
     private List<Satellite> _satellistes = new List<Satellite>();
     private List<EnemyShipController> _enemyShips = new List<EnemyShipController>();
     private List<ShipController> _friendlyShips = new List<ShipController>();
 
 
 	// Use this for initialization
-	void Start () {
-		
+	void Start ()
+    {
+        _satellistes = GetComponentsInChildren<Satellite>().ToList();	
 	}
 
     // Update is called once per frame
     void Update() {
-        this.gameObject.transform.Rotate(Vector3.forward * Time.deltaTime * _rotationParameter);
+        this.gameObject.transform.Rotate(Vector3.up * Time.deltaTime * _rotationParameter);
     }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        Handles.DrawWireDisc(transform.position, Vector3.up, GetOrbitDistanceFromPlanet());
+    }
+#endif
 
     public EnemyShipController GetNearestShip(Vector3 position)
     {
@@ -29,8 +44,10 @@ public class Planet : MonoBehaviour {
         {
             for(int i = 0; i < enemyShipsLength; ++i)
             {
-                if(Vector3.Distance(_enemyShips[i].transform.position, position) < minDistance)
+                float distance = Vector3.Distance(_enemyShips[i].transform.position, position);
+                if (distance < minDistance)
                 {
+                    minDistance = distance;
                     nearestEnemy = _enemyShips[i];
                 }
             }
@@ -47,13 +64,20 @@ public class Planet : MonoBehaviour {
         {
             for (int i = 0; i < satellitesLength; ++i)
             {
-                if (Vector3.Distance(_satellistes[i].transform.position, position) < minDistance)
+                float distance = Vector3.Distance(_satellistes[i].transform.position, position);
+                if (distance < minDistance)
                 {
+                    minDistance = distance;
                     nearestSatellite = _satellistes[i];
                 }
             }
         }
         return nearestSatellite;
+    }
+
+    public float GetOrbitDistanceFromPlanet()
+    {
+        return Mathf.Max(transform.localScale.x, transform.localScale.y, transform.localScale.z) + _additionalOrbitRadius;
     }
 
     public void AddEnemyShip(EnemyShipController enemyShip)
@@ -87,5 +111,4 @@ public class Planet : MonoBehaviour {
         satellie.transform.parent = null;
         _satellistes.Remove(satellie);
     }
-
 }
