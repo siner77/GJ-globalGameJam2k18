@@ -31,4 +31,8 @@ public class Satellite : Emitter
         EmmitSignal();
     }
 
+    public bool IsAlive()
+    {
+        return gameObject.activeInHierarchy;
+    }
 }

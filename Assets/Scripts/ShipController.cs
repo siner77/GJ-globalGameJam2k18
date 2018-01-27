@@ -8,16 +8,20 @@ namespace ShipStates
 {
     public class GoToPlanet : IState<ShipController>
     {
-        private Vector3 _targetPosition;
+        private Planet _targetPlanet;
+        private Vector3 _offset;
 
-        public GoToPlanet(Planet target)
+        private IState<ShipController> _afterReachState;
+
+        public GoToPlanet(Planet targetPlanet, IState<ShipController> afterReachState)
         {
-
+            _targetPlanet = targetPlanet;
+            _afterReachState = afterReachState;
         }
 
         public void OnEnter(ShipController controller)
         {
-
+            controller.NavMeshAgent.SetDestination(_targetPlanet.transform.position + (controller.transform.position - _targetPlanet.transform.position).normalized * _targetPlanet.GetOrbitDistanceFromPlanet());
         }
 
         public void OnExit(ShipController controller)
@@ -27,39 +31,62 @@ namespace ShipStates
 
         public void OnUpdate(ShipController controller)
         {
+            if (HasReachedPosition(controller))
+            {
+                controller.SetState(_afterReachState);
+            }
+        }
 
+        private bool HasReachedPosition(ShipController controller)
+        {
+            return controller.NavMeshAgent.remainingDistance <= controller.NavMeshAgent.stoppingDistance && controller.NavMeshAgent.pathStatus == UnityEngine.AI.NavMeshPathStatus.PathComplete;
         }
     }
 
     public class Defend : IState<ShipController>
     {
+        private Planet _target;
+
         public Defend(Planet target)
         {
-
+            _target = target;
         }
 
         public void OnEnter(ShipController controller)
         {
-            // TODO:
-            // Check if planet is under attack
-            // Get ship attacking planet
-            // Change state to attack
+            controller.transform.parent = _target.transform;
+            controller.NavMeshAgent.enabled = false;
 
-            // TODO:
-            // Attach to planet and fly in its orbit
+            EnemyShipController enemy = _target.GetNearestShip(controller.transform.position);
+            if(enemy != null)
+            {
+                controller.SetState(new Attack(enemy, this));
+                return;
+            }
         }
 
         public void OnExit(ShipController controller)
         {
-
+            if(controller.StateMachine.NextState == null || controller.StateMachine.NextState.GetType() != typeof(Attack))
+            {
+                controller.transform.parent = null;
+            }
+            controller.NavMeshAgent.enabled = true;
         }
 
         public void OnUpdate(ShipController controller)
         {
-            // TODO:
-            // Check if planet is under attack
-            // Get ship attacking planet
-            // Change state to attack
+            EnemyShipController enemy = _target.GetNearestShip(controller.transform.position);
+            if (enemy != null)
+            {
+                controller.SetState(new Attack(enemy, this));
+                return;
+            }
+            
+            Vector3 targetForward = (controller.transform.position - _target.transform.position);
+            targetForward.y = 0.0f;
+
+            controller.RotateTowards(targetForward.normalized);
         }
     }
 
@@ -94,11 +121,12 @@ namespace ShipStates
             _attackTimer = 0.0f;
             _waitTimer = 0.0f;
             _attackState = AttackState.ROTATE_TOWARDS_ENEMY;
+            controller.NavMeshAgent.enabled = false;
         }
 
         public void OnExit(ShipController controller)
         {
-
+            controller.NavMeshAgent.enabled = true;
         }
 
         public void OnUpdate(ShipController controller)
@@ -106,6 +134,11 @@ namespace ShipStates
             if (!_enemy.IsAlive())
             {
                 controller.SetState(_stateAfterEnemyDeath);
+                return;
+            }
+
+            if (!controller.IsTargetInSight(_enemy.gameObject))
+            {
                 return;
             }
 
@@ -121,9 +154,10 @@ namespace ShipStates
 
         private void UpdateRotateTowardsEnemy(ShipController controller)
         {
-            Vector3 targetForward = (_enemy.transform.position - controller.transform.position).normalized;
+            Vector3 targetForward = (_enemy.transform.position - controller.transform.position);
+            targetForward.y = 0.0f;
 
-            controller.transform.rotation = Quaternion.RotateTowards(controller.transform.rotation, Quaternion.LookRotation(targetForward), controller.RotateSpeed * Time.deltaTime);
+            controller.RotateTowards(targetForward.normalized);
 
             _attackTimer += Time.deltaTime;
             if (_attackTimer >= controller.AttackCooldown)
@@ -170,15 +204,15 @@ public class ShipController : StateMachineController<ShipController>
     public float AttackCooldown = 3.0f;
     public float AfterAttackWaitTime = 1.0f;
     public float AttackDamage = 1.0f;
-    public float AttackRange = 3.0f;
     public float Armor = 0.0f;
-    public float FlySpeed = 1.0f;
-    public float RotateSpeed = 1.0f;
+    public float FlySpeed = 3.0f;
+    public float RotateSpeed = 120.0f;
     [SerializeField]
     protected float _maxHP = 1.0f;
 
     protected float _currentHP;
     protected int _shootRaycastLayerMask;
+    protected int _sightObstacleLayerMask;
 
     public NavMeshAgent NavMeshAgent
     {
@@ -190,6 +224,7 @@ public class ShipController : StateMachineController<ShipController>
     {
         _currentHP = _maxHP;
         _shootRaycastLayerMask = LayerMask.GetMask("Ship", "Planet", "Satelite", "Obstacle");
+        _sightObstacleLayerMask = LayerMask.GetMask("Planet", "Obstacle");
         NavMeshAgent = GetComponent<NavMeshAgent>();
         NavMeshAgent.angularSpeed = RotateSpeed;
         NavMeshAgent.speed = FlySpeed;
@@ -216,7 +251,7 @@ public class ShipController : StateMachineController<ShipController>
     public virtual void Shoot()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, AttackRange, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(transform.position, transform.forward, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore))
         {
             if (hit.collider == null)
             {
@@ -231,5 +266,30 @@ public class ShipController : StateMachineController<ShipController>
 
             enemy.TakeDamage(AttackDamage, this);
         }
+    }
+
+    public bool IsTargetInSight(GameObject target)
+    {
+        RaycastHit hit;
+        bool obscured = Physics.Raycast(transform.position, (target.transform.position - transform.position).normalized, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore);
+
+        if(obscured)
+        {
+            obscured = (hit.collider.gameObject.layer & _shootRaycastLayerMask) != 0 || hit.collider.gameObject != target;
+        }
+
+        return !obscured;
+    }
+
+    public void RotateTowards(Vector3 forward)
+    {
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(forward), RotateSpeed * Time.deltaTime);
+    }
+
+    [ContextMenu("test defender")]
+    private void Test()
+    {
+        Planet p = FindObjectOfType<Planet>();
+        SetState(new ShipStates.GoToPlanet(p, new ShipStates.Defend(p)));
     }
 }

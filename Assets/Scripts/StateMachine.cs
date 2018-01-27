@@ -55,6 +55,12 @@ public class StateMachine<T> where T : StateMachineController<T>
     private IState<T> _currentState;
     private T _controller;
 
+    public IState<T> NextState
+    {
+        get;
+        private set;
+    }
+
     public StateMachine(T controller)
     {
         _controller = controller;
@@ -85,6 +91,7 @@ public class StateMachine<T> where T : StateMachineController<T>
                 return;
             }
 
+            NextState = newState;
             _currentState.OnExit(_controller);
             _currentState = newState;
             _currentState.OnEnter(_controller);

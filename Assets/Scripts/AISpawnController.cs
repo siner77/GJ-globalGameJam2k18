@@ -71,7 +71,7 @@ public class AISpawnController : MonoBehaviour
                 ShipController spawnedEnemy = _enemyShips[i].Spawn();
                 // TODO:
                 // Choose planet and set one of its satelites as target
-                spawnedEnemy.SetState(new ShipStates.GoToSatelite(null));
+
                 return;
             }
         }
