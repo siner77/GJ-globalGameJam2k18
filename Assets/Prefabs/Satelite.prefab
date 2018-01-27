@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 33627212319796878}
   - component: {fileID: 114042861971347490}
   - component: {fileID: 64925546459862696}
+  - component: {fileID: 114893355531408148}
   m_Layer: 0
   m_Name: Satelite
   m_TagString: Untagged
@@ -2847,3 +2848,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _entityType: 0
+--- !u!114 &114893355531408148
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1910080705471324}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5bf15742cebf8c428f0432a3b0452b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _signalPlaneObject: {fileID: 0}
