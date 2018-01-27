@@ -80,7 +80,7 @@ public class StateMachine<T> where T : StateMachineController<T>
         }
         else
         {
-            if(_currentState.GetType() == newState.GetType() && !force)
+            if (_currentState.GetType() == newState.GetType() && !force)
             {
                 return;
             }
@@ -93,7 +93,7 @@ public class StateMachine<T> where T : StateMachineController<T>
 
     public void Update()
     {
-        if(_currentState != null)
+        if (_currentState != null)
         {
             _currentState.OnUpdate(_controller);
         }
@@ -102,5 +102,10 @@ public class StateMachine<T> where T : StateMachineController<T>
     public bool IsInState<StateType>()
     {
         return _currentState != null && _currentState.GetType() == typeof(StateType);
+    }
+
+    public IState<T> GetCurrentState()
+    {
+        return _currentState;
     }
 }
