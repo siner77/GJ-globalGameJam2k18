@@ -283,8 +283,11 @@ public class Planet : MonoBehaviour
         }
     }
 
-    public void ActivateShield()
+    public void ActivateShield(float shieldTime)
     {
-        Debug.Log("SHIELD ACTIVATION");
+        foreach(Satellite satellite in _satellistes)
+        {
+            satellite.ActivateShield(shieldTime);
+        }
     }
 }

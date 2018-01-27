@@ -248,7 +248,7 @@ public class ShipController : StateMachineController<ShipController>
     private void OnEnable()
     {
         _currentHP = _maxHP;
-        _shootRaycastLayerMask = LayerMask.GetMask("Ship", "Planet", "Satelite", "Obstacle");
+        _shootRaycastLayerMask = LayerMask.GetMask("Ship", "Planet", "Satelite", "Obstacle", "Shield");
         _sightObstacleLayerMask = LayerMask.GetMask("Planet", "Obstacle");
         NavMeshAgent = GetComponent<NavMeshAgent>();
         NavMeshAgent.angularSpeed = RotateSpeed;

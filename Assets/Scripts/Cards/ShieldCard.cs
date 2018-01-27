@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class ShieldCard : SelectableCard<Planet>
 {
+    [SerializeField]
+    private float _shieldTime;
+
     private void OnEnable()
     {
         Init(LayerMask.GetMask("Planet"));
@@ -12,6 +15,6 @@ public class ShieldCard : SelectableCard<Planet>
     protected override void OnTargetClicked(Planet target)
     {
         base.OnTargetClicked(target);
-        target.ActivateShield();
+        target.ActivateShield(_shieldTime);
     }
 }
