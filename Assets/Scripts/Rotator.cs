@@ -7,27 +7,36 @@ public class Rotator : MonoBehaviour {
     [SerializeField]
     private LayerMask _layerToSelect;
 
-    private GameObject _selected = null;
-
-	// Use this for initialization
-	void Start () {
+    private Vector3 _previousFrameMousePosition;
+    private GameObject _selected;
+    // Use this for initialization
+    void Start () {
 		
 	}
 	
 	// Update is called once per frame
 	void Update () {
+
+        Vector3 mousePosition = Input.mousePosition;
+        if (_selected != null)
+        {
+            float prevAngleDegrees = (mousePosition.y - _previousFrameMousePosition.y) * Mathf.Rad2Deg * Time.deltaTime * 0.8f;
+            _selected.transform.Rotate(Vector3.up, prevAngleDegrees);
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             RaycastHit hitInfo = new RaycastHit();
-            bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hitInfo, float.MaxValue, _layerToSelect);
+            bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(mousePosition), out hitInfo, float.MaxValue, _layerToSelect);
             if (hit)
             {
-                
-            }
-            else
-            {
-                _selected = null;
+                _selected = hitInfo.collider.gameObject;
             }
         }
+        if (Input.GetMouseButtonUp(0))
+        {
+            _selected = null;
+        }
+        _previousFrameMousePosition = mousePosition;
     }
 }
