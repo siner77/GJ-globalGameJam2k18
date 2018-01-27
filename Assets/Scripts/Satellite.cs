@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Satellite : Emitter
@@ -24,11 +25,24 @@ public class Satellite : Emitter
 
     public void GetSignal(RaycastHit hitInfo, GameObject previousEmmiter)
     {
-        Vector3 previousDirectionNormalized = hitInfo.point - previousEmmiter.transform.position;
-        previousDirectionNormalized.Normalize();
-        _signalRay.direction = Vector3.Reflect(previousDirectionNormalized, hitInfo.normal);
-        SetRayParameters(transform.position, transform.up);
+        Vector3 previousDirection = hitInfo.point - previousEmmiter.transform.position;
+        Vector3 directionNormalized = Vector3.Reflect((previousDirection), hitInfo.normal);
+        directionNormalized.y = 0;
+        directionNormalized.Normalize();
+        if (Vector3.Dot(previousDirection, directionNormalized) > 0) return;
+        SetSignalRayParameters(gameObject.transform.position, directionNormalized);
+        SetSignalPlaneObject(directionNormalized, hitInfo.distance);
         EmmitSignal();
+    }
+
+    public void OnGettingSignalStart()
+    {
+        _signalPlaneObject.SetActive(true);
+    }
+
+    public void OnGettingSignalEnd()
+    {
+        _signalPlaneObject.SetActive(false);
     }
 
 }

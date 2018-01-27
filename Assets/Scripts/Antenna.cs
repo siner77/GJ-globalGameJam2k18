@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Antenna : Emitter {
@@ -10,11 +11,13 @@ public class Antenna : Emitter {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        EmmitSignal();
 	}
 
-    //public override void EmmitSignal()
-    //{
-    //
-    //}
+    protected override void EmmitSignal()
+    {
+        //Debug.Log("emmit signal" + this.GetInstanceID());
+        SetSignalRayParameters(_signalPlaneObject.transform.position, transform.up);
+        base.EmmitSignal();
+    }
 }
