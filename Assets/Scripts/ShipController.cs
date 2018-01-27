@@ -231,6 +231,8 @@ public class ShipController : StateMachineController<ShipController>
     public float RotateSpeed = 120.0f;
     [SerializeField]
     protected float _maxHP = 1.0f;
+    [SerializeField]
+    protected Transform _raycastOrigin;
 
     protected Spot _usedSpot;
     protected float _currentHP;
@@ -275,14 +277,14 @@ public class ShipController : StateMachineController<ShipController>
     public virtual void Shoot()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(_raycastOrigin.transform.position, transform.forward, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore))
         {
             if (hit.collider == null)
             {
                 return;
             }
 
-            ShipController enemy = hit.collider.GetComponent<ShipController>();
+            ShipController enemy = hit.collider.GetComponentInParent<ShipController>();
             if (enemy == null)
             {
                 return;

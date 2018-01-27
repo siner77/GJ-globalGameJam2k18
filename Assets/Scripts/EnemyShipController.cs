@@ -50,6 +50,7 @@ namespace ShipStates
                 Satellite closestSatellite = _target.GetNearestSatellite(controller.transform.position);
                 if (closestSatellite == null)
                 {
+                    // TODO: Go to another planet
                     controller.SetState(null);
                     return;
                 }
@@ -142,15 +143,15 @@ public class EnemyShipController : ShipController
     public override void Shoot()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(_raycastOrigin.transform.position, transform.forward, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore))
         {
             if (hit.collider == null)
             {
                 return;
             }
 
-            Satellite target = hit.collider.GetComponent<Satellite>();
-            ShipController enemy = hit.collider.GetComponent<ShipController>();
+            Satellite target = hit.collider.GetComponentInParent<Satellite>();
+            ShipController enemy = hit.collider.GetComponentInParent<ShipController>();
             if (target == null && enemy == null)
             {
                 return;

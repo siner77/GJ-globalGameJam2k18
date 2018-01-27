@@ -22,6 +22,8 @@ public class ShipCard : SelectableCard<Planet>
         {
             return;
         }
+
+        // TODO: Determine spawn position
         ShipController spawnedShip = _shipSpawnPool.Get();
         spawnedShip.SetState(new ShipStates.GoToPlanet(target, new ShipStates.Defend(target)));
     }
