@@ -20,6 +20,8 @@ public class Planet : MonoBehaviour
     public delegate void OnLooseAllSatellitesDelegate(Planet planet);
 
     [SerializeField]
+    private GameObject _satellitePrefab;
+    [SerializeField]
     private float _rotationParameter = 5.0f;
     [SerializeField]
     private float _additionalOrbitRadius = 1.5f;
@@ -29,6 +31,8 @@ public class Planet : MonoBehaviour
     private List<Spot> _enemySpots;
     [SerializeField]
     private List<Spot> _allySpots;
+    [SerializeField]
+    private List<Spot> _satelliteSpots;
     private List<Satellite> _satellistes = new List<Satellite>();
     private List<EnemyShipController> _enemyShips = new List<EnemyShipController>();
     private List<ShipController> _friendlyShips = new List<ShipController>();
@@ -47,9 +51,25 @@ public class Planet : MonoBehaviour
         set { _allySpots = value; }
     }
 
+    public List<Spot> SatelliteSpots
+    {
+        get { return _satelliteSpots; }
+        set { _satelliteSpots = value; }
+    }
+
     // Use this for initialization
     void Start ()
     {
+        if(_satellitePrefab != null)
+        {
+            GameObject satelliteObject = Instantiate(_satellitePrefab);
+            Satellite satellite = satelliteObject.GetComponent<Satellite>();
+            if(satellite != null)
+            {
+                AddSatellite(satellite);
+            }
+        }
+
         _satellistes = GetComponentsInChildren<Satellite>().ToList();	
         foreach(Satellite satellite in _satellistes)
         {
@@ -150,15 +170,23 @@ public class Planet : MonoBehaviour
         _friendlyShips.Remove(friendlyShip);
     }
 
-    public void AddSatellite(Satellite satellie)
+    public void AddSatellite(Satellite satellite)
     {
-        _satellistes.Add(satellie);
-        satellie.transform.parent = this.transform;
+        if(HasUnusedSatelliteSpot())
+        {
+            Spot satelliteSpot = GetClosestUnusedSatelliteSpot(Vector3.zero);
+            satellite.AnchoredPlanet = this;
+            satellite.transform.parent = satelliteSpot.SpotTransform;
+            satellite.transform.localPosition = Vector3.zero;
+            satelliteSpot.IsUsed = true;
+            _satellistes.Add(satellite);
+        }
     }
 
     public void RemoveSatellite(Satellite satellie)
     {
         satellie.transform.parent = null;
+        satellie.UsedSpot.IsUsed = false;
         _satellistes.Remove(satellie);
 
         if(_satellistes.Count == 0 && OnLooseAllSatellites != null)
@@ -177,6 +205,11 @@ public class Planet : MonoBehaviour
         return GetClosestUnusedSpot(position, _allySpots);
     }
 
+    public Spot GetClosestUnusedSatelliteSpot(Vector3 position)
+    {
+        return GetClosestUnusedSpot(position, _satelliteSpots);
+    }
+
     public bool HasUnusedEnemySpot()
     {
         return HasUnusedSpot(_enemySpots);
@@ -185,6 +218,11 @@ public class Planet : MonoBehaviour
     public bool HasUnusedAllySpot()
     {
         return HasUnusedSpot(_allySpots);
+    }
+
+    public bool HasUnusedSatelliteSpot()
+    {
+        return HasUnusedSpot(_satelliteSpots);
     }
 
     private bool HasUnusedSpot(List<Spot> spotList)

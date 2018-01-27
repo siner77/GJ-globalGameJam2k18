@@ -13,6 +13,13 @@ public class Satellite : Emitter
         set { _anchoredPlanet = value; }
     }
 
+    private Spot _usedSpot;
+    public Spot UsedSpot
+    {
+        get { return this._usedSpot; }
+        set { _usedSpot = value; }
+    }
+
     [SerializeField]
     private float _maxHP;
     [SerializeField]

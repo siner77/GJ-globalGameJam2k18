@@ -41,6 +41,7 @@ public class Emitter : MonoBehaviour
             {
                 if (hitInfos[i].collider.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
                 {
+                    SetSignalPlaneObject(_signalRay.direction, hitInfos[i].distance);
                     TryClearLastSatellite();
                     break;
                 }
