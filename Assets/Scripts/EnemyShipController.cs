@@ -14,6 +14,7 @@ namespace ShipStates
 
         private Planet _target;
         private Satellite _closestSatellite;
+        private LevelManager _levelManager;
         private float _attackTimer;
         private float _waitTimer;
         private AttackState _attackState;
@@ -30,6 +31,8 @@ namespace ShipStates
                 controller.SetState(null);
                 return;
             }
+
+            _levelManager = Object.FindObjectOfType<LevelManager>();
 
             _attackTimer = 0.0f;
             _waitTimer = 0.0f;
@@ -50,8 +53,15 @@ namespace ShipStates
                 Satellite closestSatellite = _target.GetNearestSatellite(controller.transform.position);
                 if (closestSatellite == null)
                 {
-                    // TODO: Go to another planet
-                    controller.SetState(null);
+                    Planet nextPlanetToAttack = _levelManager.GetPlanetToAttack();
+                    if(nextPlanetToAttack != null)
+                    {
+                        controller.SetState(new GoToPlanet(nextPlanetToAttack, new AttackPlanet(nextPlanetToAttack)));
+                    }
+                    else
+                    {
+                        controller.SetState(null);
+                    }
                     return;
                 }
                 _closestSatellite = closestSatellite;

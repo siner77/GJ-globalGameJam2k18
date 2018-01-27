@@ -19,12 +19,23 @@ class LevelManager : MonoBehaviour
     private List<Planet> _levelPlanets;
     private List<Planet> _planetCandidatesToAttack;
 
+    private Planet _startPlanet;
+
     private void Awake()
     {
         _levelPlanets = FindObjectsOfType<Planet>().ToList();
         foreach(Planet planet in _levelPlanets)
         {
             planet.OnLooseAllSatellites += OnLooseAllSatellites;
+            Antenna antenna = planet.GetAntenna();
+            if(antenna != null && antenna.Type == EAntennaType.EMITTER)
+            {
+                if(_startPlanet != null)
+                {
+                    Debug.LogError("There are multiple start planets on the level");
+                }
+                _startPlanet = planet;
+            }
         }
         _planetCandidatesToAttack = new List<Planet>();
     }
@@ -58,7 +69,7 @@ class LevelManager : MonoBehaviour
         foreach (Planet planet in _levelPlanets)
         {
             int attackingShipsCount = planet.GetAttackingShipsCount();
-            if (attackingShipsCount <= minAttackingShips && planet.HasUnusedEnemySpot())
+            if (attackingShipsCount <= minAttackingShips && planet.HasUnusedEnemySpot() && planet.HasSatellites())
             {
                 if(attackingShipsCount < minAttackingShips)
                 {
@@ -75,6 +86,11 @@ class LevelManager : MonoBehaviour
         }
 
         return _planetCandidatesToAttack[Random.Range(0, _planetCandidatesToAttack.Count)];
+    }
+
+    public Planet GetStartingPlanet()
+    {
+        return _startPlanet;
     }
 
     private void OnLooseAllSatellites(Planet planet)

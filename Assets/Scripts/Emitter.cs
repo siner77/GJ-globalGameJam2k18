@@ -45,7 +45,7 @@ public class Emitter : MonoBehaviour
                     TryClearLastSatellite();
                     break;
                 }
-                Satellite hitSatelliteLocal = hitInfos[i].collider.transform.parent.GetComponent<Satellite>();
+                Satellite hitSatelliteLocal = hitInfos[i].collider.transform.GetComponentInParent<Satellite>();
                 if (hitSatelliteLocal != null && hitSatelliteLocal != this && emmiterObject != hitSatelliteLocal.gameObject && emmiterObject != this.gameObject)
                 {
                     hitSatellite = hitSatelliteLocal;
@@ -67,7 +67,7 @@ public class Emitter : MonoBehaviour
                     hitSatellite.GetSignal(hitInfos[i], this.gameObject);
                     break;
                 }
-                Antenna hitAntenna = hitInfos[i].collider.transform.parent.GetComponent<Antenna>();
+                Antenna hitAntenna = hitInfos[i].collider.transform.GetComponentInParent<Antenna>();
                 if (hitAntenna != null && hitAntenna.Type == EAntennaType.RECEIVER)
                 {
                     hitAntenna.GetSignal(hitInfos[i], this.gameObject);

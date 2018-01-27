@@ -217,7 +217,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &4042275125292536
 Transform:
@@ -590,6 +590,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ebe3196223228e4687ea7a3b6327c59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _satellitePrefab: {fileID: 0}
   _rotationParameter: 0
   _additionalOrbitRadius: 1
   _antenna: {fileID: 114312904379266018}
@@ -607,6 +608,7 @@ MonoBehaviour:
     IsUsed: 0
   - SpotTransform: {fileID: 4417280243320446}
     IsUsed: 0
+  _satelliteSpots: []
 --- !u!114 &114770225549116408
 MonoBehaviour:
   m_ObjectHideFlags: 1

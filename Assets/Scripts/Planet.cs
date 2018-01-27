@@ -92,6 +92,11 @@ public class Planet : MonoBehaviour
     }
 #endif
 
+    public Antenna GetAntenna()
+    {
+        return _antenna;
+    }
+
     public EnemyShipController GetNearestShip(Vector3 position)
     {
         EnemyShipController nearestEnemy = null;
@@ -195,6 +200,11 @@ public class Planet : MonoBehaviour
         }
     }
 
+    public Spot GetRandomUnusedAllySpot()
+    {
+        return GetClosestUnusedAllySpot(Vector3.zero);
+    }
+
     public Spot GetClosestUnusedEnemySpot(Vector3 position)
     {
         return GetClosestUnusedSpot(position, _enemySpots);
@@ -208,6 +218,11 @@ public class Planet : MonoBehaviour
     public Spot GetClosestUnusedSatelliteSpot(Vector3 position)
     {
         return GetClosestUnusedSpot(position, _satelliteSpots);
+    }
+
+    public bool HasSatellites()
+    {
+        return _satellistes.Count > 0;
     }
 
     public bool HasUnusedEnemySpot()

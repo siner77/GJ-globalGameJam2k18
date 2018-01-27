@@ -319,6 +319,10 @@ public class ShipController : StateMachineController<ShipController>
 
     public void SetUsedSpot(Spot spot)
     {
+        if(_usedSpot != null)
+        {
+            _usedSpot.IsUsed = false;
+        }
         spot.IsUsed = true;
         _usedSpot = spot;
     }
