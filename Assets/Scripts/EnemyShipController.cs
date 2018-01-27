@@ -4,49 +4,16 @@ using UnityEngine;
 
 namespace ShipStates
 {
-    public class GoToSatelite : IState<ShipController>
-    {
-        private Planet _targetPlanet;
-        private Vector3 _offset;
-
-        public GoToSatelite(Planet targetPlanet)
-        {
-            _targetPlanet = targetPlanet;
-        }
-
-        public void OnEnter(ShipController controller)
-        {
-            controller.NavMeshAgent.SetDestination(_targetPlanet.transform.position + (controller.transform.position - _targetPlanet.transform.position).normalized * _targetPlanet.GetOrbitDistanceFromPlanet());
-        }
-
-        public void OnExit(ShipController controller)
-        {
-
-        }
-
-        public void OnUpdate(ShipController controller)
-        {
-            if(HasReachedPosition(controller))
-            {
-                controller.SetState(new AttackPlanet(_targetPlanet));
-            }
-        }
-
-        private bool HasReachedPosition(ShipController controller)
-        {
-            return controller.NavMeshAgent.remainingDistance <= controller.NavMeshAgent.stoppingDistance && controller.NavMeshAgent.pathStatus == UnityEngine.AI.NavMeshPathStatus.PathComplete;
-        }
-    }
-
     public class AttackPlanet : IState<ShipController>
     {
         private enum AttackState
         {
-            ROTATE_TOWARDS_ENEMY,
+            TRY_SHOOT,
             WAIT_AFTER_ATTACK
         }
 
         private Planet _target;
+        private Satellite _closestSatellite;
         private float _attackTimer;
         private float _waitTimer;
         private AttackState _attackState;
@@ -60,15 +27,15 @@ namespace ShipStates
         {
             if(_target == null)
             {
-                Debug.LogError("Handle this");
                 controller.SetState(null);
                 return;
             }
 
             _attackTimer = 0.0f;
             _waitTimer = 0.0f;
-            _attackState = AttackState.ROTATE_TOWARDS_ENEMY;
+            _attackState = AttackState.TRY_SHOOT;
             controller.NavMeshAgent.enabled = false;
+            _closestSatellite = _target.GetNearestSatellite(controller.transform.position);
         }
 
         public void OnExit(ShipController controller)
@@ -78,16 +45,25 @@ namespace ShipStates
 
         public void OnUpdate(ShipController controller)
         {
-            Satellite closestSatellite = _target.GetNearestSatellite(controller.transform.position);
-            if(closestSatellite == null)
+            if (_closestSatellite == null || !_closestSatellite.IsAlive() || !controller.IsTargetInSight(_closestSatellite.gameObject))
             {
-                controller.SetState(null);
-                return;
+                Satellite closestSatellite = _target.GetNearestSatellite(controller.transform.position);
+                if (closestSatellite == null)
+                {
+                    controller.SetState(null);
+                    return;
+                }
+                _closestSatellite = closestSatellite;
             }
 
-            if (_attackState == AttackState.ROTATE_TOWARDS_ENEMY)
+            Vector3 targetForward = (_closestSatellite.transform.position - controller.transform.position);
+            targetForward.y = 0.0f;
+
+            controller.RotateTowards(targetForward.normalized);
+
+            if (_attackState == AttackState.TRY_SHOOT)
             {
-                UpdateRotateTowardsEnemy(controller, closestSatellite);
+                UpdateRotateTowardsEnemy(controller, _closestSatellite);
             }
             else if (_attackState == AttackState.WAIT_AFTER_ATTACK)
             {
@@ -97,11 +73,6 @@ namespace ShipStates
 
         private void UpdateRotateTowardsEnemy(ShipController controller, Satellite closestSatellite)
         {
-            Vector3 targetForward = (closestSatellite.transform.position - controller.transform.position);
-            targetForward.y = 0.0f;
-
-            controller.transform.rotation = Quaternion.RotateTowards(controller.transform.rotation, Quaternion.LookRotation(targetForward.normalized), controller.RotateSpeed * Time.deltaTime);
-
             _attackTimer += Time.deltaTime;
             if (_attackTimer >= controller.AttackCooldown)
             {
@@ -117,7 +88,7 @@ namespace ShipStates
             if (_waitTimer >= controller.AfterAttackWaitTime)
             {
                 _attackTimer = 0.0f;
-                _attackState = AttackState.ROTATE_TOWARDS_ENEMY;
+                _attackState = AttackState.TRY_SHOOT;
             }
         }
     }
@@ -125,10 +96,19 @@ namespace ShipStates
 
 public class EnemyShipController : ShipController
 {
+    private Planet _planetToAttack;
+
+    public void SetPlanetToAttack(Planet planet)
+    {
+        _planetToAttack = planet;
+        planet.AddEnemyShip(this);
+        transform.forward = planet.transform.position - transform.position;
+    }
+
     public override void Shoot()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, AttackRange, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(transform.position, transform.forward, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore))
         {
             if (hit.collider == null)
             {
@@ -144,7 +124,7 @@ public class EnemyShipController : ShipController
 
             if (target != null)
             {
-
+                target.TakeDamage(AttackDamage);
             }
             else if (enemy != null)
             {
@@ -153,9 +133,9 @@ public class EnemyShipController : ShipController
         }
     }
 
-    [ContextMenu("test")]
-    private void Test()
+    protected override void OnDeath()
     {
-        SetState(new ShipStates.GoToSatelite(FindObjectOfType<Planet>()));
+        base.OnDeath();
+        _planetToAttack.RemoveEnemyShip(this);
     }
 }

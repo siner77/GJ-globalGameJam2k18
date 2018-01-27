@@ -8,6 +8,8 @@ using UnityEngine;
 
 public class Planet : MonoBehaviour
 {
+    public delegate void OnLooseAllSatellitesDelegate(Planet planet);
+
     [SerializeField]
     private float _rotationParameter = 5.0f;
     [SerializeField]
@@ -16,11 +18,16 @@ public class Planet : MonoBehaviour
     private List<EnemyShipController> _enemyShips = new List<EnemyShipController>();
     private List<ShipController> _friendlyShips = new List<ShipController>();
 
+    public OnLooseAllSatellitesDelegate OnLooseAllSatellites;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start ()
     {
         _satellistes = GetComponentsInChildren<Satellite>().ToList();	
+        foreach(Satellite satellite in _satellistes)
+        {
+            satellite.AnchoredPlanet = this;
+        }
 	}
 
     // Update is called once per frame
@@ -80,13 +87,26 @@ public class Planet : MonoBehaviour
         return Mathf.Max(transform.localScale.x, transform.localScale.y, transform.localScale.z) + _additionalOrbitRadius;
     }
 
+    public int GetAttackingShipsCount()
+    {
+        return _enemyShips.Count;
+    }
+
     public void AddEnemyShip(EnemyShipController enemyShip)
     {
+        if(enemyShip == null || _enemyShips.Contains(enemyShip))
+        {
+            return;
+        }
         _enemyShips.Add(enemyShip);
     }
 
     public void RemoveEnemyShip(EnemyShipController enemyShip)
     {
+        if (enemyShip == null || !_enemyShips.Contains(enemyShip))
+        {
+            return;
+        }
         _enemyShips.Remove(enemyShip);
     }
 
@@ -110,5 +130,10 @@ public class Planet : MonoBehaviour
     {
         satellie.transform.parent = null;
         _satellistes.Remove(satellie);
+
+        if(_satellistes.Count == 0 && OnLooseAllSatellites != null)
+        {
+            OnLooseAllSatellites(this);
+        }
     }
 }
