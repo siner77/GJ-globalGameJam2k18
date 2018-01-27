@@ -24,16 +24,20 @@ namespace ShipStates
 
         public void OnEnter(ShipController controller)
         {
-            if (controller.IsEnemy())
+            if (_targetSpot == null)
             {
-                _targetSpot = _targetPlanet.GetClosestUnusedEnemySpot(controller.transform.position);
-            }
-            else
-            {
-                _targetSpot = _targetPlanet.GetClosestUnusedAllySpot(controller.transform.position);
+                if (controller.IsEnemy())
+                {
+                    _targetSpot = _targetPlanet.GetClosestUnusedEnemySpot(controller.transform.position);
+                }
+                else
+                {
+                    _targetSpot = _targetPlanet.GetClosestUnusedAllySpot(controller.transform.position);
+                }
+
+                controller.SetUsedSpot(_targetSpot);
             }
 
-            controller.SetUsedSpot(_targetSpot);
             controller.NavMeshAgent.avoidancePriority = 50 + CURRENT_MOVING_SHIPS;
             CURRENT_MOVING_SHIPS += 1;
 
@@ -57,7 +61,7 @@ namespace ShipStates
 
         private bool HasReachedPosition(ShipController controller)
         {
-            return controller.NavMeshAgent.remainingDistance <= controller.NavMeshAgent.stoppingDistance && controller.NavMeshAgent.pathStatus == UnityEngine.AI.NavMeshPathStatus.PathComplete;
+            return controller.NavMeshAgent.remainingDistance <= controller.NavMeshAgent.stoppingDistance && controller.NavMeshAgent.pathStatus == NavMeshPathStatus.PathComplete;
         }
     }
 
@@ -323,11 +327,5 @@ public class ShipController : StateMachineController<ShipController>
         {
             _usedSpot.IsUsed = false;
         }
-    }
-
-    [ContextMenu("damage")]
-    public void Test()
-    {
-        TakeDamage(10.0f, null);
     }
 }

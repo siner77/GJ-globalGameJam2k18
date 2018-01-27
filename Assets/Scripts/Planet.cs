@@ -187,6 +187,11 @@ public class Planet : MonoBehaviour
         return HasUnusedSpot(_allySpots);
     }
 
+    public void ActivateShield()
+    {
+        Debug.Log("SHIELD ACTIVATION");
+    }
+
     private bool HasUnusedSpot(List<Spot> spotList)
     {
         foreach(Spot spot in spotList)

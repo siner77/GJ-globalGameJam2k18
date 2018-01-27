@@ -92,6 +92,40 @@ namespace ShipStates
             }
         }
     }
+
+    public class Freeze : IState<ShipController>
+    {
+        private IState<ShipController> _stateToRestore;
+        private float _freezeTime;
+
+        private float _timer;
+
+        public Freeze(float freezeTime, IState<ShipController> stateToSet)
+        {
+            _freezeTime = freezeTime;
+            _stateToRestore = stateToSet;
+        }
+
+        public void OnEnter(ShipController controller)
+        {
+            _timer = 0.0f;
+            controller.NavMeshAgent.isStopped = true;
+        }
+
+        public void OnExit(ShipController controller)
+        {
+            controller.NavMeshAgent.isStopped = false;
+        }
+
+        public void OnUpdate(ShipController controller)
+        {
+            _timer += Time.deltaTime;
+            if(_timer > _freezeTime)
+            {
+                controller.SetState(_stateToRestore);
+            }
+        }
+    }
 }
 
 public class EnemyShipController : ShipController
@@ -131,6 +165,11 @@ public class EnemyShipController : ShipController
                 enemy.TakeDamage(AttackDamage, this);
             }
         }
+    }
+
+    public void Freeze(float freezeTime)
+    {
+        SetState(new ShipStates.Freeze(freezeTime, StateMachine.GetCurrentState()));
     }
 
     public override bool IsEnemy()
