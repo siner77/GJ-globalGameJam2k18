@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -17,8 +18,9 @@ public class Planet : MonoBehaviour
 
 
 	// Use this for initialization
-	void Start () {
-		
+	void Start ()
+    {
+        _satellistes = GetComponentsInChildren<Satellite>().ToList();	
 	}
 
     // Update is called once per frame
@@ -42,8 +44,10 @@ public class Planet : MonoBehaviour
         {
             for(int i = 0; i < enemyShipsLength; ++i)
             {
-                if(Vector3.Distance(_enemyShips[i].transform.position, position) < minDistance)
+                float distance = Vector3.Distance(_enemyShips[i].transform.position, position);
+                if (distance < minDistance)
                 {
+                    minDistance = distance;
                     nearestEnemy = _enemyShips[i];
                 }
             }
@@ -60,8 +64,10 @@ public class Planet : MonoBehaviour
         {
             for (int i = 0; i < satellitesLength; ++i)
             {
-                if (Vector3.Distance(_satellistes[i].transform.position, position) < minDistance)
+                float distance = Vector3.Distance(_satellistes[i].transform.position, position);
+                if (distance < minDistance)
                 {
+                    minDistance = distance;
                     nearestSatellite = _satellistes[i];
                 }
             }
@@ -105,5 +111,4 @@ public class Planet : MonoBehaviour
         satellie.transform.parent = null;
         _satellistes.Remove(satellie);
     }
-
 }
