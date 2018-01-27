@@ -92,6 +92,7 @@ GameObject:
   - component: {fileID: 114917650502794896}
   - component: {fileID: 64538851802231320}
   - component: {fileID: 65129498817396328}
+  - component: {fileID: 114580091908368922}
   m_Layer: 8
   m_Name: SateliteBase
   m_TagString: Untagged
@@ -349,6 +350,21 @@ MonoBehaviour:
   _shield: {fileID: 1296310983986150}
   _maxHP: 1
   _armor: 0
+--- !u!114 &114580091908368922
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1743228826887794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
+  originalLayer: 0
+  originalMaterials: []
 --- !u!114 &114688986171105644
 MonoBehaviour:
   m_ObjectHideFlags: 1
