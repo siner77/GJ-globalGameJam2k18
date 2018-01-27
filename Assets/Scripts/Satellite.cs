@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class Satellite : Emitter
 {
+    [SerializeField]
+    private float _maxHP;
+    [SerializeField]
+    private float _armor;
+
+    private float _currentHP;
 
     private Planet _anchoredPlanet;
     public Planet AnchoredPlanet
@@ -13,12 +19,18 @@ public class Satellite : Emitter
     }
 
 	// Use this for initialization
-	void Start () {
-		
+	void Start ()
+    {
+
 	}
 
-	// Update is called once per frame
-	void Update () {
+    private void OnEnable()
+    {
+        _currentHP = _maxHP;
+    }
+
+    // Update is called once per frame
+    void Update () {
 		
 	}
 
@@ -34,5 +46,15 @@ public class Satellite : Emitter
     public bool IsAlive()
     {
         return gameObject.activeInHierarchy;
+    }
+
+    public void TakeDamage(float damage)
+    {
+        _currentHP -= Mathf.Max(damage - _armor, 0.0f);
+        if(_currentHP <= 0.0f)
+        {
+            gameObject.SetActive(false);
+            AnchoredPlanet.RemoveSatellite(this);
+        }
     }
 }

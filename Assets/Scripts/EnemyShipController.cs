@@ -118,7 +118,7 @@ public class EnemyShipController : ShipController
 
             if (target != null)
             {
-
+                target.TakeDamage(AttackDamage);
             }
             else if (enemy != null)
             {
