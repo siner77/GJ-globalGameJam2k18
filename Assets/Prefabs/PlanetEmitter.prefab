@@ -129,7 +129,7 @@ GameObject:
   - component: {fileID: 135752587768827352}
   - component: {fileID: 23632822729339966}
   - component: {fileID: 114376762051206090}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: PlanetEmitter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
