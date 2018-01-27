@@ -78,7 +78,7 @@ namespace ShipStates
 
         public void OnUpdate(ShipController controller)
         {
-            Satellite closestSatellite = _target.FindClosestSatelite(controller.transform.position);
+            Satellite closestSatellite = _target.GetNearestSatellite(controller.transform.position);
             if(closestSatellite == null)
             {
                 controller.SetState(null);
