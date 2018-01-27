@@ -10,21 +10,15 @@ public class StateMachineController<T> : MonoBehaviour where T : StateMachineCon
         protected set;
     }
 
-    private void Start()
+    private void Awake()
     {
         StateMachine = new StateMachine<T>((T)this);
-        OnStart();
     }
 
     private void Update()
     {
         StateMachine.Update();
         OnUpdate();
-    }
-
-    protected virtual void OnStart()
-    {
-
     }
 
     protected virtual void OnUpdate()
@@ -75,6 +69,10 @@ public class StateMachine<T> where T : StateMachineController<T>
     {
         if(newState == null)
         {
+            if(_currentState != null)
+            {
+                _currentState.OnExit(_controller);
+            }
             _currentState = null;
             return;
         }

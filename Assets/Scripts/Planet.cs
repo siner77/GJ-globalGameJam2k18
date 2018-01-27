@@ -87,13 +87,26 @@ public class Planet : MonoBehaviour
         return Mathf.Max(transform.localScale.x, transform.localScale.y, transform.localScale.z) + _additionalOrbitRadius;
     }
 
+    public int GetAttackingShipsCount()
+    {
+        return _enemyShips.Count;
+    }
+
     public void AddEnemyShip(EnemyShipController enemyShip)
     {
+        if(enemyShip == null || _enemyShips.Contains(enemyShip))
+        {
+            return;
+        }
         _enemyShips.Add(enemyShip);
     }
 
     public void RemoveEnemyShip(EnemyShipController enemyShip)
     {
+        if (enemyShip == null || !_enemyShips.Contains(enemyShip))
+        {
+            return;
+        }
         _enemyShips.Remove(enemyShip);
     }
 

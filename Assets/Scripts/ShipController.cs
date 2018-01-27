@@ -94,7 +94,7 @@ namespace ShipStates
     {
         private enum AttackState
         {
-            ROTATE_TOWARDS_ENEMY,
+            TRY_SHOOT,
             WAIT_AFTER_ATTACK
         }
 
@@ -120,7 +120,7 @@ namespace ShipStates
 
             _attackTimer = 0.0f;
             _waitTimer = 0.0f;
-            _attackState = AttackState.ROTATE_TOWARDS_ENEMY;
+            _attackState = AttackState.TRY_SHOOT;
             controller.NavMeshAgent.enabled = false;
         }
 
@@ -137,14 +137,19 @@ namespace ShipStates
                 return;
             }
 
+            Vector3 targetForward = (_enemy.transform.position - controller.transform.position);
+            targetForward.y = 0.0f;
+
+            controller.RotateTowards(targetForward.normalized);
+
             if (!controller.IsTargetInSight(_enemy.gameObject))
             {
                 return;
             }
 
-            if (_attackState == AttackState.ROTATE_TOWARDS_ENEMY)
+            if (_attackState == AttackState.TRY_SHOOT)
             {
-                UpdateRotateTowardsEnemy(controller);
+                UpdateShoot(controller);
             }
             else if (_attackState == AttackState.WAIT_AFTER_ATTACK)
             {
@@ -152,13 +157,8 @@ namespace ShipStates
             }
         }
 
-        private void UpdateRotateTowardsEnemy(ShipController controller)
+        private void UpdateShoot(ShipController controller)
         {
-            Vector3 targetForward = (_enemy.transform.position - controller.transform.position);
-            targetForward.y = 0.0f;
-
-            controller.RotateTowards(targetForward.normalized);
-
             _attackTimer += Time.deltaTime;
             if (_attackTimer >= controller.AttackCooldown)
             {
@@ -174,7 +174,7 @@ namespace ShipStates
             if (_waitTimer >= controller.AfterAttackWaitTime)
             {
                 _attackTimer = 0.0f;
-                _attackState = AttackState.ROTATE_TOWARDS_ENEMY;
+                _attackState = AttackState.TRY_SHOOT;
             }
         }
     }
@@ -220,7 +220,7 @@ public class ShipController : StateMachineController<ShipController>
         protected set;
     }
 
-    protected virtual void OnEnable()
+    private void OnEnable()
     {
         _currentHP = _maxHP;
         _shootRaycastLayerMask = LayerMask.GetMask("Ship", "Planet", "Satelite", "Obstacle");
@@ -235,6 +235,7 @@ public class ShipController : StateMachineController<ShipController>
         _currentHP -= Mathf.Max(0.0f, damage - Armor);
         if (_currentHP <= 0.0f)
         {
+            OnDeath();
             SetState(new ShipStates.Die());
         }
         else
@@ -286,10 +287,8 @@ public class ShipController : StateMachineController<ShipController>
         transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(forward), RotateSpeed * Time.deltaTime);
     }
 
-    [ContextMenu("test defender")]
-    private void Test()
+    protected virtual void OnDeath()
     {
-        Planet p = FindObjectOfType<Planet>();
-        SetState(new ShipStates.GoToPlanet(p, new ShipStates.Defend(p)));
+        
     }
 }
