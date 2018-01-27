@@ -6,16 +6,17 @@ namespace ShipStates
 {
     public class GoToSatelite : IState<ShipController>
     {
-        private Satellite _target;
+        private Planet _targetPlanet;
+        private Vector3 _offset;
 
-        public GoToSatelite(Satellite target)
+        public GoToSatelite(Planet targetPlanet)
         {
-            _target = target;
+            _targetPlanet = targetPlanet;
         }
 
         public void OnEnter(ShipController controller)
         {
-
+            controller.NavMeshAgent.SetDestination(_targetPlanet.transform.position + (controller.transform.position - _targetPlanet.transform.position).normalized * _targetPlanet.GetOrbitDistanceFromPlanet());
         }
 
         public void OnExit(ShipController controller)
@@ -25,20 +26,19 @@ namespace ShipStates
 
         public void OnUpdate(ShipController controller)
         {
-            controller.transform.position = Vector3.MoveTowards(controller.transform.position, _target.transform.position, controller.FlySpeed * Time.deltaTime);
-
-            // TODO:
-            // Find a better way to rotate ship
-            controller.transform.rotation = Quaternion.RotateTowards(controller.transform.rotation, Quaternion.LookRotation((_target.transform.position - controller.transform.position).normalized), Time.deltaTime * controller.RotateSpeed);
-
-            if (Vector3.Distance(controller.transform.position, _target.transform.position) < controller.AttackRange)
+            if(HasReachedPosition(controller))
             {
-                controller.SetState(new AttackSatelite(_target));
+                controller.SetState(new AttackPlanet(_targetPlanet));
             }
+        }
+
+        private bool HasReachedPosition(ShipController controller)
+        {
+            return controller.NavMeshAgent.remainingDistance <= controller.NavMeshAgent.stoppingDistance && controller.NavMeshAgent.pathStatus == UnityEngine.AI.NavMeshPathStatus.PathComplete;
         }
     }
 
-    public class AttackSatelite : IState<ShipController>
+    public class AttackPlanet : IState<ShipController>
     {
         private enum AttackState
         {
@@ -46,37 +46,48 @@ namespace ShipStates
             WAIT_AFTER_ATTACK
         }
 
-        private Satellite _target;
+        private Planet _target;
         private float _attackTimer;
         private float _waitTimer;
         private AttackState _attackState;
 
-        public AttackSatelite(Satellite target)
+        public AttackPlanet(Planet targetPlanet)
         {
-            _target = target;
+            _target = targetPlanet;
         }
 
         public void OnEnter(ShipController controller)
         {
+            if(_target == null)
+            {
+                Debug.LogError("Handle this");
+                controller.SetState(null);
+                return;
+            }
+
             _attackTimer = 0.0f;
             _waitTimer = 0.0f;
             _attackState = AttackState.ROTATE_TOWARDS_ENEMY;
+            controller.NavMeshAgent.enabled = false;
         }
 
         public void OnExit(ShipController controller)
         {
-
+            controller.NavMeshAgent.enabled = true;
         }
 
         public void OnUpdate(ShipController controller)
         {
-            // TODO:
-            // Check if satelite is still alive
-            // If not then target next satelite
+            Satellite closestSatellite = _target.FindClosestSatelite(controller.transform.position);
+            if(closestSatellite == null)
+            {
+                controller.SetState(null);
+                return;
+            }
 
             if (_attackState == AttackState.ROTATE_TOWARDS_ENEMY)
             {
-                UpdateRotateTowardsEnemy(controller);
+                UpdateRotateTowardsEnemy(controller, closestSatellite);
             }
             else if (_attackState == AttackState.WAIT_AFTER_ATTACK)
             {
@@ -84,9 +95,12 @@ namespace ShipStates
             }
         }
 
-        private void UpdateRotateTowardsEnemy(ShipController controller)
+        private void UpdateRotateTowardsEnemy(ShipController controller, Satellite closestSatellite)
         {
-            controller.transform.forward = (_target.transform.position - controller.transform.position).normalized;
+            Vector3 targetForward = (closestSatellite.transform.position - controller.transform.position);
+            targetForward.y = 0.0f;
+
+            controller.transform.rotation = Quaternion.RotateTowards(controller.transform.rotation, Quaternion.LookRotation(targetForward.normalized), controller.RotateSpeed * Time.deltaTime);
 
             _attackTimer += Time.deltaTime;
             if (_attackTimer >= controller.AttackCooldown)
@@ -142,6 +156,6 @@ public class EnemyShipController : ShipController
     [ContextMenu("test")]
     private void Test()
     {
-        SetState(new ShipStates.GoToSatelite(FindObjectOfType<Satellite>()));
+        SetState(new ShipStates.GoToSatelite(FindObjectOfType<Planet>()));
     }
 }

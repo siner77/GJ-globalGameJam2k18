@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 namespace ShipStates
 {
@@ -120,7 +121,9 @@ namespace ShipStates
 
         private void UpdateRotateTowardsEnemy(ShipController controller)
         {
-            controller.transform.forward = (_enemy.transform.position - controller.transform.position).normalized;
+            Vector3 targetForward = (_enemy.transform.position - controller.transform.position).normalized;
+
+            controller.transform.rotation = Quaternion.RotateTowards(controller.transform.rotation, Quaternion.LookRotation(targetForward), controller.RotateSpeed * Time.deltaTime);
 
             _attackTimer += Time.deltaTime;
             if (_attackTimer >= controller.AttackCooldown)
@@ -161,6 +164,7 @@ namespace ShipStates
     }
 }
 
+[RequireComponent(typeof(NavMeshAgent))]
 public class ShipController : StateMachineController<ShipController>
 {
     public float AttackCooldown = 3.0f;
@@ -176,10 +180,19 @@ public class ShipController : StateMachineController<ShipController>
     protected float _currentHP;
     protected int _shootRaycastLayerMask;
 
+    public NavMeshAgent NavMeshAgent
+    {
+        get;
+        protected set;
+    }
+
     protected virtual void OnEnable()
     {
         _currentHP = _maxHP;
         _shootRaycastLayerMask = LayerMask.GetMask("Ship", "Planet", "Satelite", "Obstacle");
+        NavMeshAgent = GetComponent<NavMeshAgent>();
+        NavMeshAgent.angularSpeed = RotateSpeed;
+        NavMeshAgent.speed = FlySpeed;
     }
 
     public void TakeDamage(float damage, ShipController agressor)
