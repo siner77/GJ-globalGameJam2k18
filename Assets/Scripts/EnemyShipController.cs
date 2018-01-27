@@ -133,6 +133,11 @@ public class EnemyShipController : ShipController
         }
     }
 
+    public override bool IsEnemy()
+    {
+        return true;
+    }
+
     protected override void OnDeath()
     {
         base.OnDeath();

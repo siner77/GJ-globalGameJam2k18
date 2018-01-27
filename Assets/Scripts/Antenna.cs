@@ -13,7 +13,7 @@ public enum EAntennaType
 public class Antenna : Emitter {
 
     public EAntennaType Type = EAntennaType.EMITTER;
-    private RoundController _roundController = null;
+    private LevelManager _levelManager = null;
 	// Use this for initialization
 	void Start () {
 		
@@ -23,8 +23,8 @@ public class Antenna : Emitter {
     {
         if(Type == EAntennaType.RECEIVER)
         {
-            _roundController = GameObject.FindObjectOfType<RoundController>();
-            if(_roundController == null)
+            _levelManager = GameObject.FindObjectOfType<LevelManager>();
+            if(_levelManager == null)
             {
                 Debug.LogError("there is no roundController");
                 Debug.Break();
@@ -37,7 +37,7 @@ public class Antenna : Emitter {
     {
         if (Type == EAntennaType.RECEIVER)
         {
-            _roundController.ImproveProgress();
+            _levelManager.ImproveProgress();
         }
     }
 

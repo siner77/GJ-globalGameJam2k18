@@ -8,7 +8,10 @@ namespace ShipStates
 {
     public class GoToPlanet : IState<ShipController>
     {
+        private static int CURRENT_MOVING_SHIPS = 1;
+
         private Planet _targetPlanet;
+        private Spot _targetSpot;
         private Vector3 _offset;
 
         private IState<ShipController> _afterReachState;
@@ -21,16 +24,31 @@ namespace ShipStates
 
         public void OnEnter(ShipController controller)
         {
-            controller.NavMeshAgent.SetDestination(_targetPlanet.transform.position + (controller.transform.position - _targetPlanet.transform.position).normalized * _targetPlanet.GetOrbitDistanceFromPlanet());
+            if (controller.IsEnemy())
+            {
+                _targetSpot = _targetPlanet.GetClosestUnusedEnemySpot(controller.transform.position);
+            }
+            else
+            {
+                _targetSpot = _targetPlanet.GetClosestUnusedAllySpot(controller.transform.position);
+            }
+
+            controller.SetUsedSpot(_targetSpot);
+            controller.NavMeshAgent.avoidancePriority = 50 + CURRENT_MOVING_SHIPS;
+            CURRENT_MOVING_SHIPS += 1;
+
+            controller.NavMeshAgent.SetDestination(_targetSpot.SpotTransform.position);
         }
 
         public void OnExit(ShipController controller)
         {
-
+            controller.NavMeshAgent.avoidancePriority = 50;
+            CURRENT_MOVING_SHIPS -= 1;
         }
 
         public void OnUpdate(ShipController controller)
         {
+            controller.NavMeshAgent.SetDestination(_targetSpot.SpotTransform.position);
             if (HasReachedPosition(controller))
             {
                 controller.SetState(_afterReachState);
@@ -210,6 +228,7 @@ public class ShipController : StateMachineController<ShipController>
     [SerializeField]
     protected float _maxHP = 1.0f;
 
+    protected Spot _usedSpot;
     protected float _currentHP;
     protected int _shootRaycastLayerMask;
     protected int _sightObstacleLayerMask;
@@ -287,8 +306,28 @@ public class ShipController : StateMachineController<ShipController>
         transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(forward), RotateSpeed * Time.deltaTime);
     }
 
+    public virtual bool IsEnemy()
+    {
+        return false;
+    }
+
+    public void SetUsedSpot(Spot spot)
+    {
+        spot.IsUsed = true;
+        _usedSpot = spot;
+    }
+
     protected virtual void OnDeath()
     {
-        
+        if(_usedSpot != null)
+        {
+            _usedSpot.IsUsed = false;
+        }
+    }
+
+    [ContextMenu("damage")]
+    public void Test()
+    {
+        TakeDamage(10.0f, null);
     }
 }
