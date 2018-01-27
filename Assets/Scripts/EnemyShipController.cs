@@ -50,6 +50,7 @@ namespace ShipStates
                 Satellite closestSatellite = _target.GetNearestSatellite(controller.transform.position);
                 if (closestSatellite == null)
                 {
+                    // TODO: Go to another planet
                     controller.SetState(null);
                     return;
                 }
@@ -92,6 +93,40 @@ namespace ShipStates
             }
         }
     }
+
+    public class Freeze : IState<ShipController>
+    {
+        private IState<ShipController> _stateToRestore;
+        private float _freezeTime;
+
+        private float _timer;
+
+        public Freeze(float freezeTime, IState<ShipController> stateToSet)
+        {
+            _freezeTime = freezeTime;
+            _stateToRestore = stateToSet;
+        }
+
+        public void OnEnter(ShipController controller)
+        {
+            _timer = 0.0f;
+            controller.NavMeshAgent.isStopped = true;
+        }
+
+        public void OnExit(ShipController controller)
+        {
+            controller.NavMeshAgent.isStopped = false;
+        }
+
+        public void OnUpdate(ShipController controller)
+        {
+            _timer += Time.deltaTime;
+            if(_timer > _freezeTime)
+            {
+                controller.SetState(_stateToRestore);
+            }
+        }
+    }
 }
 
 public class EnemyShipController : ShipController
@@ -108,15 +143,15 @@ public class EnemyShipController : ShipController
     public override void Shoot()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(_raycastOrigin.transform.position, transform.forward, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore))
         {
             if (hit.collider == null)
             {
                 return;
             }
 
-            Satellite target = hit.collider.GetComponent<Satellite>();
-            ShipController enemy = hit.collider.GetComponent<ShipController>();
+            Satellite target = hit.collider.GetComponentInParent<Satellite>();
+            ShipController enemy = hit.collider.GetComponentInParent<ShipController>();
             if (target == null && enemy == null)
             {
                 return;
@@ -131,6 +166,11 @@ public class EnemyShipController : ShipController
                 enemy.TakeDamage(AttackDamage, this);
             }
         }
+    }
+
+    public void Freeze(float freezeTime)
+    {
+        SetState(new ShipStates.Freeze(freezeTime, StateMachine.GetCurrentState()));
     }
 
     public override bool IsEnemy()

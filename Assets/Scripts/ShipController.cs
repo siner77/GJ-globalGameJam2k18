@@ -24,16 +24,20 @@ namespace ShipStates
 
         public void OnEnter(ShipController controller)
         {
-            if (controller.IsEnemy())
+            if (_targetSpot == null)
             {
-                _targetSpot = _targetPlanet.GetClosestUnusedEnemySpot(controller.transform.position);
-            }
-            else
-            {
-                _targetSpot = _targetPlanet.GetClosestUnusedAllySpot(controller.transform.position);
+                if (controller.IsEnemy())
+                {
+                    _targetSpot = _targetPlanet.GetClosestUnusedEnemySpot(controller.transform.position);
+                }
+                else
+                {
+                    _targetSpot = _targetPlanet.GetClosestUnusedAllySpot(controller.transform.position);
+                }
+
+                controller.SetUsedSpot(_targetSpot);
             }
 
-            controller.SetUsedSpot(_targetSpot);
             controller.NavMeshAgent.avoidancePriority = 50 + CURRENT_MOVING_SHIPS;
             CURRENT_MOVING_SHIPS += 1;
 
@@ -57,7 +61,7 @@ namespace ShipStates
 
         private bool HasReachedPosition(ShipController controller)
         {
-            return controller.NavMeshAgent.remainingDistance <= controller.NavMeshAgent.stoppingDistance && controller.NavMeshAgent.pathStatus == UnityEngine.AI.NavMeshPathStatus.PathComplete;
+            return controller.NavMeshAgent.remainingDistance <= controller.NavMeshAgent.stoppingDistance && controller.NavMeshAgent.pathStatus == NavMeshPathStatus.PathComplete;
         }
     }
 
@@ -227,6 +231,8 @@ public class ShipController : StateMachineController<ShipController>
     public float RotateSpeed = 120.0f;
     [SerializeField]
     protected float _maxHP = 1.0f;
+    [SerializeField]
+    protected Transform _raycastOrigin;
 
     protected Spot _usedSpot;
     protected float _currentHP;
@@ -271,14 +277,14 @@ public class ShipController : StateMachineController<ShipController>
     public virtual void Shoot()
     {
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.forward, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(_raycastOrigin.transform.position, transform.forward, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore))
         {
             if (hit.collider == null)
             {
                 return;
             }
 
-            ShipController enemy = hit.collider.GetComponent<ShipController>();
+            ShipController enemy = hit.collider.GetComponentInParent<ShipController>();
             if (enemy == null)
             {
                 return;
@@ -323,11 +329,5 @@ public class ShipController : StateMachineController<ShipController>
         {
             _usedSpot.IsUsed = false;
         }
-    }
-
-    [ContextMenu("damage")]
-    public void Test()
-    {
-        TakeDamage(10.0f, null);
     }
 }

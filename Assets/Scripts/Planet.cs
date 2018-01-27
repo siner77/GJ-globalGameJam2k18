@@ -267,4 +267,9 @@ public class Planet : MonoBehaviour
             spot.SpotTransform.position = (spot.SpotTransform.position - transform.position).normalized * GetOrbitDistanceFromPlanet() + transform.position;
         }
     }
+
+    public void ActivateShield()
+    {
+        Debug.Log("SHIELD ACTIVATION");
+    }
 }
