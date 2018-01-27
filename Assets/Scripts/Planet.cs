@@ -1,10 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 using UnityEngine;
+
+[Serializable]
+public class Spot
+{
+    public Transform SpotTransform;
+    [HideInInspector]
+    public bool IsUsed;
+}
 
 public class Planet : MonoBehaviour
 {
@@ -16,11 +25,27 @@ public class Planet : MonoBehaviour
     private float _additionalOrbitRadius = 1.5f;
     [SerializeField]
     private Antenna _antenna;
+    [SerializeField]
+    private List<Spot> _enemySpots;
+    [SerializeField]
+    private List<Spot> _allySpots;
     private List<Satellite> _satellistes = new List<Satellite>();
     private List<EnemyShipController> _enemyShips = new List<EnemyShipController>();
     private List<ShipController> _friendlyShips = new List<ShipController>();
 
     public OnLooseAllSatellitesDelegate OnLooseAllSatellites;
+
+    public List<Spot> EnemySpots
+    {
+        get { return _enemySpots; }
+        set { _enemySpots = value; }
+    }
+
+    public List<Spot> AllySpots
+    {
+        get { return _allySpots; }
+        set { _allySpots = value; }
+    }
 
     // Use this for initialization
     void Start ()
@@ -30,6 +55,9 @@ public class Planet : MonoBehaviour
         {
             satellite.AnchoredPlanet = this;
         }
+
+        SetProperSpotPositions(_enemySpots);
+        SetProperSpotPositions(_allySpots);
 	}
 
     // Update is called once per frame
@@ -136,6 +164,69 @@ public class Planet : MonoBehaviour
         if(_satellistes.Count == 0 && OnLooseAllSatellites != null)
         {
             OnLooseAllSatellites(this);
+        }
+    }
+
+    public Spot GetClosestUnusedEnemySpot(Vector3 position)
+    {
+        return GetClosestUnusedSpot(position, _enemySpots);
+    }
+
+    public Spot GetClosestUnusedAllySpot(Vector3 position)
+    {
+        return GetClosestUnusedSpot(position, _allySpots);
+    }
+
+    public bool HasUnusedEnemySpot()
+    {
+        return HasUnusedSpot(_enemySpots);
+    }
+
+    public bool HasUnusedAllySpot()
+    {
+        return HasUnusedSpot(_allySpots);
+    }
+
+    private bool HasUnusedSpot(List<Spot> spotList)
+    {
+        foreach(Spot spot in spotList)
+        {
+            if(!spot.IsUsed)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private Spot GetClosestUnusedSpot(Vector3 position, List<Spot> spotList)
+    {
+        float minDistance = float.MaxValue;
+        Spot unusedSpot = null;
+
+        foreach (Spot spot in spotList)
+        {
+            float distance = Vector3.Distance(spot.SpotTransform.position, position);
+            if (distance < minDistance && !spot.IsUsed)
+            {
+                minDistance = distance;
+                unusedSpot = spot;
+            }
+        }
+
+        return unusedSpot;
+    }
+
+    private void SetProperSpotPositions(List<Spot> spotList)
+    {
+        foreach(Spot spot in spotList)
+        {
+            if(spot.SpotTransform == null)
+            {
+                continue;
+            }
+            spot.SpotTransform.position = (spot.SpotTransform.position - transform.position).normalized * GetOrbitDistanceFromPlanet() + transform.position;
         }
     }
 }

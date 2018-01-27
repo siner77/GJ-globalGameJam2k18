@@ -86,7 +86,6 @@ public class AISpawnController : MonoBehaviour
         Planet planetToAttack = _levelManager.GetPlanetToAttack();
         if(planetToAttack == null)
         {
-            Debug.LogError("Something has gone wrong! Cannot find a planet to attack!");
             return;
         }
 
@@ -200,7 +199,6 @@ public class AISpawnController : MonoBehaviour
     private bool IsPointAboveDiagonal(Rect rectangle, Vector2 diagonal, Vector2 point)
     {
         // https://stackoverflow.com/questions/20245104/point-inside-a-rectangle-on-which-side-of-the-diagonal-is-it
-
         Vector2 toPoint = point - rectangle.position;
 
         float diagonalSlope = diagonal.y / diagonal.x;
