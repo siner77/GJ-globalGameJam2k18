@@ -20,6 +20,8 @@ public class Satellite : Emitter
 
     private float _currentHP;
 
+    private bool _gotSignalThisFrame;
+
 
     // Use this for initialization
     void Start () {
@@ -34,29 +36,39 @@ public class Satellite : Emitter
 
     // Update is called once per frame
     void Update () {
-		
+        _gotSignalThisFrame = false;
 	}
 
-    public void GetSignal(RaycastHit hitInfo, GameObject previousEmmiter)
+    public override void GetSignal(RaycastHit hitInfo, GameObject previousEmmiter)
     {
-        Vector3 previousDirection = hitInfo.point - previousEmmiter.transform.position;
-        Vector3 directionNormalized = Vector3.Reflect((previousDirection), hitInfo.normal);
-        directionNormalized.y = 0;
-        directionNormalized.Normalize();
-        if (Vector3.Dot(previousDirection, directionNormalized) > 0) return;
-        SetSignalRayParameters(gameObject.transform.position, directionNormalized);
-        SetSignalPlaneObject(directionNormalized, hitInfo.distance);
-        EmmitSignal();
+        if (_gotSignalThisFrame)
+        {
+            return;
+        }
+        SetSignalRayParameters(gameObject.transform.position, this.transform.forward);
+        _gotSignalThisFrame = true;
+        EmmitSignal(previousEmmiter);
     }
 
     public void OnGettingSignalStart()
     {
-        _signalPlaneObject.SetActive(true);
+        if (!_signalPlaneObject.activeSelf)
+        {
+            _signalPlaneObject.SetActive(true);
+        }
     }
 
     public void OnGettingSignalEnd()
     {
-        _signalPlaneObject.SetActive(false);
+        if (_signalPlaneObject.activeSelf)
+        {
+            _signalPlaneObject.SetActive(false);
+            if (_lastSatellite != null)
+            {
+                _lastSatellite.OnGettingSignalEnd();
+                _lastSatellite = null;
+            }
+        }
     }
 
 

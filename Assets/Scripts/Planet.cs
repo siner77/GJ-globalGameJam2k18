@@ -14,6 +14,8 @@ public class Planet : MonoBehaviour
     private float _rotationParameter = 5.0f;
     [SerializeField]
     private float _additionalOrbitRadius = 1.5f;
+    [SerializeField]
+    private Antenna _antenna;
     private List<Satellite> _satellistes = new List<Satellite>();
     private List<EnemyShipController> _enemyShips = new List<EnemyShipController>();
     private List<ShipController> _friendlyShips = new List<ShipController>();

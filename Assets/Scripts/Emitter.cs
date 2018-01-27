@@ -12,19 +12,10 @@ public class Emitter : MonoBehaviour
     [SerializeField]
     protected LayerMask _signalLayerMask;
 
-    private Satellite _lastSatellite = null;
+    protected Satellite _lastSatellite = null;
 
-
-    // Use this for initialization
-    void Start()
+    public virtual void GetSignal(RaycastHit hitInfo, GameObject previousEmmiter)
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     protected virtual void SetSignalRayParameters(Vector3 origin, Vector3 direction)
@@ -39,39 +30,55 @@ public class Emitter : MonoBehaviour
         _signalPlaneObject.transform.localScale = new Vector3(_signalPlaneObject.transform.localScale.x, _signalPlaneObject.transform.localScale.y, distance);
     }
 
-    protected virtual void EmmitSignal()
+    protected virtual void EmmitSignal(GameObject emmiterObject)
     {
         RaycastHit[] hitInfos = Physics.RaycastAll(_signalRay, float.MaxValue, _signalLayerMask).OrderBy(h => h.distance).ToArray();
         int hitInfosLength = hitInfos.Length;
+        Satellite hitSatellite = null;
         if (hitInfosLength > 0)
         {
-            for(int i = 0; i < hitInfosLength; ++i)
+            for (int i = 0; i < hitInfosLength; ++i)
             {
-                Satellite hitSatellite = hitInfos[i].collider.transform.parent.GetComponent<Satellite>();
-                if (hitSatellite != null )   
+                if (hitInfos[i].collider.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
                 {
-                    if( _lastSatellite != null)
+                    TryClearLastSatellite();
+                    break;
+                }
+                Satellite hitSatelliteLocal = hitInfos[i].collider.transform.parent.GetComponent<Satellite>();
+                if (hitSatelliteLocal != null && hitSatelliteLocal != this && emmiterObject != hitSatelliteLocal.gameObject && emmiterObject != this.gameObject)
+                {
+                    hitSatellite = hitSatelliteLocal;
+                    if (_lastSatellite != null)
                     {
-                        if( hitSatellite != this)
+                        if (hitSatellite != _lastSatellite)
                         {
-                            _lastSatellite.OnGettingSignalEnd();
                             hitSatellite.OnGettingSignalStart();
-                        }        
+                            _lastSatellite.OnGettingSignalEnd();
+                            _lastSatellite = hitSatellite;
+                        }
                     }
                     else
                     {
                         hitSatellite.OnGettingSignalStart();
                         _lastSatellite = hitSatellite;
                     }
-                    hitSatellite.GetSignal(hitInfos[i], this.gameObject);
                     SetSignalPlaneObject(_signalRay.direction, hitInfos[i].distance);
-                    break; 
+                    hitSatellite.GetSignal(hitInfos[i], this.gameObject);
+                    break;
+                }
+                Antenna hitAntenna = hitInfos[i].collider.transform.parent.GetComponent<Antenna>();
+                if (hitAntenna != null && hitAntenna.Type == EAntennaType.RECEIVER)
+                {
+                    hitAntenna.GetSignal(hitInfos[i], this.gameObject);
+                    SetSignalPlaneObject(_signalRay.direction, hitInfos[i].distance);
+                    TryClearLastSatellite();
+                    break;
                 }
             }
         }
-        else
+        if (_lastSatellite != null)
         {
-            if (_lastSatellite != null)
+            if (hitSatellite == null)
             {
                 _lastSatellite.OnGettingSignalEnd();
                 _lastSatellite = null;
@@ -79,5 +86,13 @@ public class Emitter : MonoBehaviour
         }
     }
 
-
+    private void TryClearLastSatellite()
+    {
+        if (_lastSatellite != null)
+        {
+            _lastSatellite.OnGettingSignalEnd();
+            _lastSatellite = null;
+        }
+    }
+    
 }
