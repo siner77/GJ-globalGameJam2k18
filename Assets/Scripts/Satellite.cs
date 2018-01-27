@@ -26,7 +26,7 @@ public class Satellite : Emitter
     private float _armor;
 
     private float _currentHP;
-
+    private cakeslice.Outline _outline;
     private bool _gotSignalThisFrame;
 
 
@@ -38,6 +38,7 @@ public class Satellite : Emitter
     private void OnEnable()
     {
         _currentHP = _maxHP;
+        _outline = GetComponentInChildren<cakeslice.Outline>();
     }
 
 
@@ -62,6 +63,10 @@ public class Satellite : Emitter
         if (!_signalPlaneObject.activeSelf)
         {
             _signalPlaneObject.SetActive(true);
+            if(_outline != null)
+            {
+                _outline.enabled = true;
+            }
         }
     }
 
@@ -70,6 +75,10 @@ public class Satellite : Emitter
         if (_signalPlaneObject.activeSelf)
         {
             _signalPlaneObject.SetActive(false);
+            if (_outline != null)
+            {
+                _outline.enabled = false;
+            }
             if (_lastSatellite != null)
             {
                 _lastSatellite.OnGettingSignalEnd();

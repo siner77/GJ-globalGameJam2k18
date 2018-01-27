@@ -13,6 +13,7 @@ public class Emitter : MonoBehaviour
     protected LayerMask _signalLayerMask;
 
     protected Satellite _lastSatellite = null;
+    protected GameObject _lastObstacle = null;
 
     public virtual void GetSignal(RaycastHit hitInfo, GameObject previousEmmiter)
     {
@@ -39,8 +40,13 @@ public class Emitter : MonoBehaviour
         {
             for (int i = 0; i < hitInfosLength; ++i)
             {
-                if (hitInfos[i].collider.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+                if (hitInfos[i].collider.gameObject.layer == LayerMask.NameToLayer("Obstacle") || hitInfos[i].collider.gameObject.layer == LayerMask.NameToLayer("Planet"))
                 {
+                    cakeslice.Outline outline = hitInfos[i].collider.gameObject.GetComponentInChildren<cakeslice.Outline>();
+                    if(outline != null)
+                    {
+                        outline.enabled = true;
+                    }
                     SetSignalPlaneObject(_signalRay.direction, hitInfos[i].distance);
                     TryClearLastSatellite();
                     break;

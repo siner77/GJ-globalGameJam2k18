@@ -47,6 +47,11 @@ namespace cakeslice
             Renderer = GetComponent<Renderer>();
         }
 
+        void Start()
+        {
+            enabled = false;
+        }
+
         void OnEnable()
         {
 			IEnumerable<OutlineEffect> effects = Camera.allCameras.AsEnumerable()
