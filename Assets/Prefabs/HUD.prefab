@@ -464,7 +464,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Cooldown: 3
   _cooldownImage: {fileID: 114721192342752184}
-  _shipPrefab: {fileID: 0}
+  _shipPrefab: {fileID: 114073685338757134, guid: 9ecc7956673711f46b2e289f888e3bb0,
+    type: 2}
 --- !u!114 &114446412053578618
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -553,7 +554,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Cooldown: 3
   _cooldownImage: {fileID: 114979645859086868}
-  _shipPrefab: {fileID: 0}
+  _shipPrefab: {fileID: 114807675139587808, guid: b1ec47cbeea4aef479cb2a78059a9338,
+    type: 2}
 --- !u!114 &114721192342752184
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -621,7 +623,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Cooldown: 3
   _cooldownImage: {fileID: 114816678504070814}
-  _shipPrefab: {fileID: 0}
+  _shipPrefab: {fileID: 114236278371796170, guid: 673a5f8717d4d0c4686bea2ef6881dbf,
+    type: 2}
 --- !u!114 &114816678504070814
 MonoBehaviour:
   m_ObjectHideFlags: 1
