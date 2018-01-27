@@ -27,8 +27,22 @@ public class Emitter : MonoBehaviour
         _signalRay.direction = direction;
     }
 
-    public virtual void EmmitSignal()
+    protected virtual void SetSignalPlaneObject()
     {
 
+    }
+
+    protected virtual void EmmitSignal()
+    {
+        SetRayParameters(transform.position, transform.up);
+        RaycastHit hitInfo;
+        if (Physics.Raycast(_signalRay, out hitInfo))
+        {
+            Satellite hitSatellite = gameObject.GetComponent<Satellite>();
+            if (hitSatellite != null)
+            {
+                hitSatellite.GetSignal(hitInfo, this.gameObject);
+            }
+        }
     }
 }
