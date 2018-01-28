@@ -233,6 +233,8 @@ public class ShipController : StateMachineController<ShipController>
     protected float _maxHP = 1.0f;
     [SerializeField]
     protected Transform _raycastOrigin;
+    [SerializeField]
+    protected ParticleSystem _shootParticles;
 
     protected Spot _usedSpot;
     protected float _currentHP;
@@ -282,6 +284,10 @@ public class ShipController : StateMachineController<ShipController>
     public virtual void Shoot()
     {
         RaycastHit hit;
+        if(_shootParticles != null)
+        {
+            _shootParticles.Play();
+        }
         if (Physics.Raycast(_raycastOrigin.transform.position, transform.forward, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore))
         {
             if (hit.collider == null)

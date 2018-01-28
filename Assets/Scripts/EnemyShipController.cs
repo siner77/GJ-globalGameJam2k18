@@ -169,6 +169,10 @@ public class EnemyShipController : ShipController
     public override void Shoot()
     {
         RaycastHit hit;
+        if (_shootParticles != null)
+        {
+            _shootParticles.Play();
+        }
         if (Physics.Raycast(_raycastOrigin.transform.position, transform.forward, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore))
         {
             if (hit.collider == null)

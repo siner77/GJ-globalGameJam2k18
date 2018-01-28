@@ -112,7 +112,7 @@ NavMeshSettings:
     accuratePlacement: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 23800000, guid: 3aefd24aca347ec40bfaf3338cb50e1d, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 8d6e05af11a32c045ae4c1eec3b0639a, type: 2}
 --- !u!43 &48633378
 Mesh:
   m_ObjectHideFlags: 0
@@ -688,7 +688,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 0
   m_RenderingPath: 1
-  m_TargetTexture: {fileID: 815562323}
+  m_TargetTexture: {fileID: 730778491}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
@@ -1026,6 +1026,37 @@ Mesh:
   m_BakedConvexCollisionMesh: 
   m_BakedTriangleCollisionMesh: 
   m_MeshOptimized: 0
+--- !u!84 &730778491
+RenderTexture:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: 
+  m_ImageContentsHash:
+    serializedVersion: 2
+    Hash: 00000000000000000000000000000000
+  m_ForcedFallbackFormat: 4
+  m_DownscaleFallback: 0
+  m_Width: 1004
+  m_Height: 452
+  m_AntiAliasing: 1
+  m_DepthFormat: 1
+  m_ColorFormat: 0
+  m_MipMap: 0
+  m_GenerateMips: 1
+  m_SRGB: 0
+  m_UseDynamicScale: 0
+  m_BindMS: 0
+  m_TextureSettings:
+    serializedVersion: 2
+    m_FilterMode: 1
+    m_Aniso: 0
+    m_MipBias: 0
+    m_WrapU: 1
+    m_WrapV: 1
+    m_WrapW: 1
+  m_Dimension: 2
+  m_VolumeDepth: 1
 --- !u!4 &749998869 stripped
 Transform:
   m_PrefabParentObject: {fileID: 4731050617026772, guid: e3830a22d4a9eed49a276ec138f4302e,
@@ -1337,7 +1368,7 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f530757e634d1654187462fceb773488, type: 2}
   m_IsPrefabParent: 0
---- !u!84 &815562323
+--- !u!84 &837239802
 RenderTexture:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1361,7 +1392,7 @@ RenderTexture:
   m_TextureSettings:
     serializedVersion: 2
     m_FilterMode: 1
-    m_Aniso: 0
+    m_Aniso: 1
     m_MipBias: 0
     m_WrapU: 1
     m_WrapV: 1
@@ -1748,8 +1779,8 @@ MonoBehaviour:
   sourceCamera: {fileID: 950826603}
   outlineCamera: {fileID: 438686924}
   outlineShaderMaterial: {fileID: 0}
-  renderTexture: {fileID: 815562323}
-  extraRenderTexture: {fileID: 1807671927}
+  renderTexture: {fileID: 730778491}
+  extraRenderTexture: {fileID: 837239802}
 --- !u!20 &950826603 stripped
 Camera:
   m_PrefabParentObject: {fileID: 20763122544608058, guid: 5da126b6d7338d34caeea62af5bc9ff8,
@@ -2152,37 +2183,6 @@ Prefab:
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 5da126b6d7338d34caeea62af5bc9ff8, type: 2}
   m_IsPrefabParent: 0
---- !u!84 &1807671927
-RenderTexture:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_Name: 
-  m_ImageContentsHash:
-    serializedVersion: 2
-    Hash: 00000000000000000000000000000000
-  m_ForcedFallbackFormat: 4
-  m_DownscaleFallback: 0
-  m_Width: 1004
-  m_Height: 452
-  m_AntiAliasing: 1
-  m_DepthFormat: 1
-  m_ColorFormat: 0
-  m_MipMap: 0
-  m_GenerateMips: 1
-  m_SRGB: 0
-  m_UseDynamicScale: 0
-  m_BindMS: 0
-  m_TextureSettings:
-    serializedVersion: 2
-    m_FilterMode: 1
-    m_Aniso: 1
-    m_MipBias: 0
-    m_WrapU: 1
-    m_WrapV: 1
-    m_WrapW: 1
-  m_Dimension: 2
-  m_VolumeDepth: 1
 --- !u!1 &1892909819
 GameObject:
   m_ObjectHideFlags: 0
