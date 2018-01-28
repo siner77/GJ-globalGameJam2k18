@@ -42,14 +42,15 @@ public class Emitter : MonoBehaviour
             {
                 if (hitInfos[i].collider.gameObject.layer == LayerMask.NameToLayer("Obstacle") || hitInfos[i].collider.gameObject.layer == LayerMask.NameToLayer("Planet"))
                 {
-                    cakeslice.Outline outline = hitInfos[i].collider.gameObject.GetComponentInChildren<cakeslice.Outline>();
-                    if(outline != null)
-                    {
-                        outline.enabled = true;
-                    }
-                    SetSignalPlaneObject(_signalRay.direction, hitInfos[i].distance);
-                    TryClearLastSatellite();
                     break;
+                    //cakeslice.Outline outline = hitInfos[i].collider.gameObject.GetComponentInChildren<cakeslice.Outline>();
+                    //if(outline != null)
+                    //{
+                    //    outline.enabled = true;
+                    //}
+                    //SetSignalPlaneObject(_signalRay.direction, hitInfos[i].distance);
+                    //TryClearLastSatellite();
+                    //break;
                 }
                 Satellite hitSatelliteLocal = hitInfos[i].collider.transform.GetComponentInParent<Satellite>();
                 if (hitSatelliteLocal != null && hitSatelliteLocal != this && emmiterObject != hitSatelliteLocal.gameObject && emmiterObject != this.gameObject)

@@ -49,7 +49,6 @@ namespace cakeslice
 
         void Start()
         {
-            enabled = false;
         }
           
         void OnEnable()
