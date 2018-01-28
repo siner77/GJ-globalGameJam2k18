@@ -28,21 +28,23 @@ public class Satellite : Emitter
 
     private float _currentHP;
     private float _shieldTime;
+    private int _signals;
     private cakeslice.Outline _outline;
 
     private bool _gotSignalThisFrame;
-
 
     // Use this for initialization
     private void Start ()
     {
         _shield.SetActive(false);
+        _signals = 0;
     }
 
     private void OnEnable()
     {
         _currentHP = _maxHP;
         _outline = gameObject.GetComponentInChildren<cakeslice.Outline>(true);
+        _signals = 0;
     }
 
 
@@ -74,7 +76,8 @@ public class Satellite : Emitter
 
     public void OnGettingSignalStart()
     {
-        if (!_signalPlaneObject.activeSelf)
+        _signals += 1;
+        if (!_signalPlaneObject.activeSelf && _signals == 1)
         {
             if(_outline != null)
             {
@@ -86,7 +89,9 @@ public class Satellite : Emitter
 
     public void OnGettingSignalEnd()
     {
-        if (_signalPlaneObject.activeSelf)
+        _signals -= 1;
+        _signals = Mathf.Min(_signals, 0);
+        if (_signalPlaneObject.activeSelf && _signals == 0)
         {
             _signalPlaneObject.SetActive(false);
             if (_outline != null)

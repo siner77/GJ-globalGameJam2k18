@@ -45,6 +45,8 @@ class LevelManager : MonoBehaviour
             }
         }
         _planetCandidatesToAttack = new List<Planet>();
+
+        Time.timeScale = 1;
     }
 
     void Update()
@@ -58,7 +60,6 @@ class LevelManager : MonoBehaviour
 
     public void ImproveProgress()
     {
-        Debug.Log(_progress);
         _progress += Time.deltaTime * _progressModifier;
         if (_progress >= _progressLimit)
         {
@@ -120,6 +121,7 @@ class LevelManager : MonoBehaviour
 
     private void GameOver()
     {
+        Time.timeScale = 0;
         if(OnLoose != null)
         {
             OnLoose();
@@ -128,7 +130,8 @@ class LevelManager : MonoBehaviour
 
     private void Win()
     {
-        if(OnWin != null)
+        Time.timeScale = 0;
+        if (OnWin != null)
         {
             OnWin();
         }
