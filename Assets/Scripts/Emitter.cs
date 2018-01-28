@@ -6,16 +6,23 @@ using UnityEngine;
 
 public class Emitter : MonoBehaviour
 {
+    public class Signal
+    {
+        public List<Emitter> AllEmmiters = new List<Emitter>();
+    }
+
     protected Ray _signalRay = new Ray();
     [SerializeField]
     protected GameObject _signalPlaneObject;
     [SerializeField]
     protected LayerMask _signalLayerMask;
+    [SerializeField]
+    protected Transform _raycastOrigin;
 
     protected Satellite _lastSatellite = null;
     protected GameObject _lastObstacle = null;
 
-    public virtual void GetSignal(RaycastHit hitInfo, GameObject previousEmmiter)
+    public virtual void GetSignal(RaycastHit hitInfo, GameObject previousEmmiter, Signal signal)
     {
     }
 
@@ -31,7 +38,7 @@ public class Emitter : MonoBehaviour
         _signalPlaneObject.transform.localScale = new Vector3(_signalPlaneObject.transform.localScale.x, _signalPlaneObject.transform.localScale.y, distance);
     }
 
-    protected virtual void EmmitSignal(GameObject emmiterObject)
+    protected virtual void EmmitSignal(GameObject emmiterObject, Signal signal)
     {
         RaycastHit[] hitInfos = Physics.RaycastAll(_signalRay, float.MaxValue, _signalLayerMask).OrderBy(h => h.distance).ToArray();
         int hitInfosLength = hitInfos.Length;
@@ -42,6 +49,7 @@ public class Emitter : MonoBehaviour
             {
                 if (hitInfos[i].collider.gameObject.layer == LayerMask.NameToLayer("Obstacle") || hitInfos[i].collider.gameObject.layer == LayerMask.NameToLayer("Planet"))
                 {
+                    SetSignalPlaneObject(_signalRay.direction, hitInfos[i].distance);
                     break;
                     //cakeslice.Outline outline = hitInfos[i].collider.gameObject.GetComponentInChildren<cakeslice.Outline>();
                     //if(outline != null)
@@ -52,10 +60,25 @@ public class Emitter : MonoBehaviour
                     //TryClearLastSatellite();
                     //break;
                 }
+
+                SetSignalPlaneObject(_signalRay.direction, hitInfos[i].distance);
+
                 Satellite hitSatelliteLocal = hitInfos[i].collider.transform.GetComponentInParent<Satellite>();
                 if (hitSatelliteLocal != null && hitSatelliteLocal != this && emmiterObject != hitSatelliteLocal.gameObject && emmiterObject != this.gameObject)
                 {
                     hitSatellite = hitSatelliteLocal;
+                    if(hitSatellite != null)
+                    {
+                        if(signal.AllEmmiters.Contains(hitSatellite))
+                        {
+                            break;
+                        }
+                        signal.AllEmmiters.Add(hitSatellite);
+                    }
+                    else
+                    {
+                        Debug.Log("Ups?");
+                    }
                     if (_lastSatellite != null)
                     {
                         if (hitSatellite != _lastSatellite)
@@ -70,20 +93,23 @@ public class Emitter : MonoBehaviour
                         hitSatellite.OnGettingSignalStart();
                         _lastSatellite = hitSatellite;
                     }
-                    SetSignalPlaneObject(_signalRay.direction, hitInfos[i].distance);
-                    hitSatellite.GetSignal(hitInfos[i], this.gameObject);
+                    hitSatellite.GetSignal(hitInfos[i], this.gameObject, signal);
                     break;
                 }
                 Antenna hitAntenna = hitInfos[i].collider.transform.GetComponentInParent<Antenna>();
                 if (hitAntenna != null && hitAntenna.Type == EAntennaType.RECEIVER)
                 {
-                    hitAntenna.GetSignal(hitInfos[i], this.gameObject);
-                    SetSignalPlaneObject(_signalRay.direction, hitInfos[i].distance);
+                    hitAntenna.GetSignal(hitInfos[i], this.gameObject, signal);
                     TryClearLastSatellite();
                     break;
                 }
             }
         }
+        else
+        {
+            SetSignalPlaneObject(_signalRay.direction, 30.0f);
+        }
+
         if (_lastSatellite != null)
         {
             if (hitSatellite == null)
