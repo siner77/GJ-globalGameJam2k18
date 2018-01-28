@@ -2,15 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 class LevelManager : MonoBehaviour
 {
+    public delegate void OnWinLooseDelegate();
+
+    public OnWinLooseDelegate OnWin;
+    public OnWinLooseDelegate OnLoose;
+
     [SerializeField]
     private float _progressModifier = 1.0f;
     [SerializeField]
     private float _gameTimeLimit = 300.0f;
+    [SerializeField]
+    private string _nextSceneName;
 
     private float _progress = 0.0f;
     private float _progressLimit = 100.0f;
@@ -101,6 +108,11 @@ class LevelManager : MonoBehaviour
         return _startPlanet;
     }
 
+    public void GoToNextLevel()
+    {
+        SceneManager.LoadScene(_nextSceneName);
+    }
+
     private void OnLooseAllSatellites(Planet planet)
     {
 
@@ -108,13 +120,17 @@ class LevelManager : MonoBehaviour
 
     private void GameOver()
     {
-        Debug.LogError("GAME OVER");
-        Debug.Break();
+        if(OnLoose != null)
+        {
+            OnLoose();
+        }
     }
 
     private void Win()
     {
-        Debug.Log("Win, GZ");
-        Debug.Break();
+        if(OnWin != null)
+        {
+            OnWin();
+        }
     }
 }
