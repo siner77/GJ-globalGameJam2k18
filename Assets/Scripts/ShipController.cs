@@ -164,7 +164,7 @@ namespace ShipStates
 
             controller.RotateTowards(targetForward.normalized);
 
-            if (!controller.IsTargetInSight(_enemy.gameObject))
+            if (!controller.IsTargetInSight(_enemy))
             {
                 return;
             }
@@ -294,14 +294,14 @@ public class ShipController : StateMachineController<ShipController>
         }
     }
 
-    public bool IsTargetInSight(GameObject target)
+    public bool IsTargetInSight<T>(T target) where T : MonoBehaviour
     {
         RaycastHit hit;
-        bool obscured = Physics.Raycast(transform.position, (target.transform.position - transform.position).normalized, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore);
+        bool obscured = Physics.Raycast(_raycastOrigin.position, (target.transform.position - _raycastOrigin.position).normalized, out hit, float.MaxValue, _shootRaycastLayerMask, QueryTriggerInteraction.Ignore);
 
         if(obscured)
         {
-            obscured = (hit.collider.gameObject.layer & _shootRaycastLayerMask) != 0 || hit.collider.gameObject != target;
+            obscured = hit.collider.gameObject.GetComponentInParent<T>() != target;
         }
 
         return !obscured;

@@ -48,7 +48,7 @@ namespace ShipStates
 
         public void OnUpdate(ShipController controller)
         {
-            if (_closestSatellite == null || !_closestSatellite.IsAlive() || !controller.IsTargetInSight(_closestSatellite.gameObject))
+            if (_closestSatellite == null || !_closestSatellite.IsAlive() || !controller.IsTargetInSight(_closestSatellite))
             {
                 Satellite closestSatellite = _target.GetNearestSatellite(controller.transform.position);
                 if (closestSatellite == null)

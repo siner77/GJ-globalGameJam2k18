@@ -65,15 +65,15 @@ public class Satellite : Emitter
         }
 	}
 
-    public override void GetSignal(RaycastHit hitInfo, GameObject previousEmmiter)
+    public override void GetSignal(RaycastHit hitInfo, GameObject previousEmmiter, Signal signal)
     {
         if (_gotSignalThisFrame)
         {
             return;
         }
-        SetSignalRayParameters(gameObject.transform.position, this.transform.forward);
+        SetSignalRayParameters(_raycastOrigin.transform.position, this.transform.forward);
         _gotSignalThisFrame = true;
-        EmmitSignal(previousEmmiter);
+        EmmitSignal(previousEmmiter, signal);
     }
 
     public void OnGettingSignalStart()

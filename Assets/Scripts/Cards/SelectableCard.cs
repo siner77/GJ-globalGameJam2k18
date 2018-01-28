@@ -38,7 +38,7 @@ public class SelectableCard<T> : CardBase where T : MonoBehaviour
         {
             if (hit.collider != null)
             {
-                _target = hit.collider.GetComponent<T>();
+                _target = hit.collider.GetComponentInParent<T>();
             }
         }
     }

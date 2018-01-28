@@ -33,7 +33,7 @@ public class Antenna : Emitter {
         }
     }
 
-    public override void GetSignal(RaycastHit hitInfo, GameObject previousEmmiter)
+    public override void GetSignal(RaycastHit hitInfo, GameObject previousEmmiter, Signal signal)
     {
         if (Type == EAntennaType.RECEIVER)
         {
@@ -43,15 +43,15 @@ public class Antenna : Emitter {
 
     // Update is called once per frame
     void Update () {
-            EmmitSignal(null);
+            EmmitSignal(null, new Signal());
 	}
 
-    protected override void EmmitSignal(GameObject emmiterObject)
+    protected override void EmmitSignal(GameObject emmiterObject, Signal signal)
     {
         if (Type == EAntennaType.EMITTER)
         {
             SetSignalRayParameters(_signalPlaneObject.transform.position, transform.up);
-            base.EmmitSignal(emmiterObject);
+            base.EmmitSignal(emmiterObject, signal);
         }
     }
 }
