@@ -281,6 +281,11 @@ public class ShipController : StateMachineController<ShipController>
         return _currentHP / _maxHP;
     }
 
+    public float GetMaxHP()
+    {
+        return _maxHP;
+    }
+
     public virtual void Shoot()
     {
         RaycastHit hit;

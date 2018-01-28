@@ -248,9 +248,9 @@ MonoBehaviour:
   AfterAttackWaitTime: 1
   AttackDamage: 1
   Armor: 0
-  FlySpeed: 3
+  FlySpeed: 6
   RotateSpeed: 120
-  _maxHP: 1
+  _maxHP: 2
   _raycastOrigin: {fileID: 4468381397398624}
   _shootParticles: {fileID: 198059007885146602}
 --- !u!114 &114522315508695934

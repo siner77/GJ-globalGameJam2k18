@@ -9670,7 +9670,7 @@ MonoBehaviour:
   AfterAttackWaitTime: 1
   AttackDamage: 1
   Armor: 0
-  FlySpeed: 3
+  FlySpeed: 5
   RotateSpeed: 120
   _maxHP: 1
   _raycastOrigin: {fileID: 4713453852409742}
