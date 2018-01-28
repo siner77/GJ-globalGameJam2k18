@@ -75,10 +75,6 @@ public class Emitter : MonoBehaviour
                         }
                         signal.AllEmmiters.Add(hitSatellite);
                     }
-                    else
-                    {
-                        Debug.Log("Ups?");
-                    }
                     if (_lastSatellite != null)
                     {
                         if (hitSatellite != _lastSatellite)
