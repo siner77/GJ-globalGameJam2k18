@@ -45,19 +45,16 @@ class LevelManager : MonoBehaviour
         _gameTime += Time.deltaTime;
         if (_gameTime > _gameTimeLimit)
         {
-            Debug.Log("game over");
-            Debug.Break();
+            GameOver();
         }
     }
 
     public void ImproveProgress()
     {
         _progress += Time.deltaTime * _progressModifier;
-        Debug.Log(string.Format("Progress = {0}", _progress));
-        if (_progress > _progressLimit)
+        if (_progress >= _progressLimit)
         {
-            Debug.Log("win, gz");
-            Debug.Break();
+            Win();
         }
     }
 
@@ -95,7 +92,18 @@ class LevelManager : MonoBehaviour
 
     private void OnLooseAllSatellites(Planet planet)
     {
+
+    }
+
+    private void GameOver()
+    {
         Debug.LogError("GAME OVER");
+        Debug.Break();
+    }
+
+    private void Win()
+    {
+        Debug.Log("Win, GZ");
         Debug.Break();
     }
 }

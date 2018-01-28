@@ -188,11 +188,12 @@ public class Planet : MonoBehaviour
         }
     }
 
-    public void RemoveSatellite(Satellite satellie)
+    public void RemoveSatellite(Satellite satellite)
     {
-        satellie.transform.parent = null;
-        satellie.UsedSpot.IsUsed = false;
-        _satellistes.Remove(satellie);
+        satellite.AnchoredPlanet = null;
+        satellite.transform.parent = null;
+        satellite.UsedSpot.IsUsed = false;
+        _satellistes.Remove(satellite);
 
         if(_satellistes.Count == 0 && OnLooseAllSatellites != null)
         {
@@ -283,8 +284,11 @@ public class Planet : MonoBehaviour
         }
     }
 
-    public void ActivateShield()
+    public void ActivateShield(float shieldTime)
     {
-        Debug.Log("SHIELD ACTIVATION");
+        foreach(Satellite satellite in _satellistes)
+        {
+            satellite.ActivateShield(shieldTime);
+        }
     }
 }

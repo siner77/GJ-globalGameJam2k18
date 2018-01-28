@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Satellite : Emitter
 {
-
     private Planet _anchoredPlanet;
     public Planet AnchoredPlanet
     {
@@ -21,30 +20,44 @@ public class Satellite : Emitter
     }
 
     [SerializeField]
+    private GameObject _shield;
+    [SerializeField]
     private float _maxHP;
     [SerializeField]
     private float _armor;
 
     private float _currentHP;
+    private float _shieldTime;
     private cakeslice.Outline _outline;
+
     private bool _gotSignalThisFrame;
 
 
     // Use this for initialization
-    void Start () {
-		
+    private void Start ()
+    {
+        _shield.SetActive(false);
 	}
 
     private void OnEnable()
     {
         _currentHP = _maxHP;
-        _outline = GetComponentInChildren<cakeslice.Outline>();
     }
 
 
     // Update is called once per frame
-    void Update () {
+    private void Update ()
+    {
         _gotSignalThisFrame = false;
+
+        if(_shield.activeInHierarchy)
+        {
+            _shieldTime -= Time.deltaTime;
+            if(_shieldTime <= 0.0f)
+            {
+                _shield.SetActive(false);
+            }
+        }
 	}
 
     public override void GetSignal(RaycastHit hitInfo, GameObject previousEmmiter)
@@ -63,10 +76,6 @@ public class Satellite : Emitter
         if (!_signalPlaneObject.activeSelf)
         {
             _signalPlaneObject.SetActive(true);
-            if(_outline != null)
-            {
-                _outline.enabled = true;
-            }
         }
     }
 
@@ -75,10 +84,6 @@ public class Satellite : Emitter
         if (_signalPlaneObject.activeSelf)
         {
             _signalPlaneObject.SetActive(false);
-            if (_outline != null)
-            {
-                _outline.enabled = false;
-            }
             if (_lastSatellite != null)
             {
                 _lastSatellite.OnGettingSignalEnd();
@@ -87,6 +92,11 @@ public class Satellite : Emitter
         }
     }
 
+    public void ActivateShield(float shieldTime)
+    {
+        _shieldTime = shieldTime;
+        _shield.SetActive(true);
+    }
 
     public bool IsAlive()
     {
