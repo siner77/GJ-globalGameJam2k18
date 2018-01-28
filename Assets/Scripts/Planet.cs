@@ -183,6 +183,7 @@ public class Planet : MonoBehaviour
             satellite.AnchoredPlanet = this;
             satellite.transform.parent = satelliteSpot.SpotTransform;
             satellite.transform.localPosition = Vector3.zero;
+            satellite.transform.localRotation = Quaternion.Euler(0, 0, 0);
             satellite.UsedSpot = satelliteSpot;
             satelliteSpot.IsUsed = true;
             _satellistes.Add(satellite);
