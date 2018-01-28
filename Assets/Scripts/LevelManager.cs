@@ -59,6 +59,16 @@ class LevelManager : MonoBehaviour
         }
     }
 
+    public float GetProgress()
+    {
+        return _progress;
+    }
+
+    public float GetTimeLeft()
+    {
+        return _gameTimeLimit - _gameTime;
+    }
+
     public Planet GetPlanetToAttack()
     {
         _planetCandidatesToAttack.Clear();

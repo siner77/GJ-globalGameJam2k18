@@ -29,30 +29,33 @@ public class PlanetSpotSceneEditor : Editor
             planet.SatelliteSpots = new List<Spot>();
         }
 
-        foreach (Spot spot in planet.EnemySpots)
+        if (Tools.current == Tool.Move || Tools.current == Tool.Transform)
         {
-            if (spot.SpotTransform == null)
+            foreach (Spot spot in planet.EnemySpots)
             {
-                continue;
+                if (spot.SpotTransform == null)
+                {
+                    continue;
+                }
+                Undo.RecordObject(planet, "Moving spot");
+                Vector3 newPosition = Handles.DoPositionHandle(spot.SpotTransform.position, Quaternion.identity);
+                newPosition.y = planet.transform.position.y;
+                spot.SpotTransform.position = (newPosition - planet.transform.position).normalized * planet.GetOrbitDistanceFromPlanet() + planet.transform.position;
+                Handles.Label(spot.SpotTransform.position, spot.SpotTransform.name);
             }
-            Undo.RecordObject(planet, "Moving spot");
-            Vector3 newPosition = Handles.DoPositionHandle(spot.SpotTransform.position, Quaternion.identity);
-            newPosition.y = planet.transform.position.y;
-            spot.SpotTransform.position = (newPosition - planet.transform.position).normalized * planet.GetOrbitDistanceFromPlanet() + planet.transform.position;
-            Handles.Label(spot.SpotTransform.position, spot.SpotTransform.name);
-        }
 
-        foreach (Spot spot in planet.AllySpots)
-        {
-            if (spot.SpotTransform == null)
+            foreach (Spot spot in planet.AllySpots)
             {
-                continue;
+                if (spot.SpotTransform == null)
+                {
+                    continue;
+                }
+                Undo.RecordObject(planet, "Moving spot");
+                Vector3 newPosition = Handles.DoPositionHandle(spot.SpotTransform.position, Quaternion.identity);
+                newPosition.y = planet.transform.position.y;
+                spot.SpotTransform.position = (newPosition - planet.transform.position).normalized * planet.GetOrbitDistanceFromPlanet() + planet.transform.position;
+                Handles.Label(spot.SpotTransform.position, spot.SpotTransform.name);
             }
-            Undo.RecordObject(planet, "Moving spot");
-            Vector3 newPosition = Handles.DoPositionHandle(spot.SpotTransform.position, Quaternion.identity);
-            newPosition.y = planet.transform.position.y;
-            spot.SpotTransform.position = (newPosition - planet.transform.position).normalized * planet.GetOrbitDistanceFromPlanet() + planet.transform.position;
-            Handles.Label(spot.SpotTransform.position, spot.SpotTransform.name);
         }
 
         foreach (Spot spot in planet.SatelliteSpots)
@@ -61,12 +64,19 @@ public class PlanetSpotSceneEditor : Editor
             {
                 continue;
             }
-            Undo.RecordObject(planet, "Moving spot");
-            Vector3 newPosition = Handles.DoPositionHandle(spot.SpotTransform.position, Quaternion.identity);
-            newPosition.y = planet.transform.position.y;
-            spot.SpotTransform.position = (newPosition - planet.transform.position).normalized * planet.GetOrbitDistanceFromPlanet() + planet.transform.position;
+            if (Tools.current == Tool.Move || Tools.current == Tool.Transform)
+            {
+                Undo.RecordObject(planet, "Moving spot");
+                Vector3 newPosition = Handles.DoPositionHandle(spot.SpotTransform.position, spot.SpotTransform.rotation);
+                newPosition.y = planet.transform.position.y;
+                spot.SpotTransform.position = (newPosition - planet.transform.position).normalized * planet.GetOrbitDistanceFromPlanet() + planet.transform.position;
+            }
+            if (Tools.current == Tool.Rotate || Tools.current == Tool.Transform)
+            {
+                Undo.RecordObject(planet, "Rotating spot");
+                spot.SpotTransform.rotation = Handles.DoRotationHandle(spot.SpotTransform.rotation, spot.SpotTransform.position);
+            }
             Handles.Label(spot.SpotTransform.position, spot.SpotTransform.name);
-
         }
     }
 }
