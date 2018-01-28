@@ -51,6 +51,7 @@ class LevelManager : MonoBehaviour
 
     public void ImproveProgress()
     {
+        Debug.Log(_progress);
         _progress += Time.deltaTime * _progressModifier;
         if (_progress >= _progressLimit)
         {

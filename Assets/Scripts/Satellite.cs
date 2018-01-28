@@ -37,11 +37,12 @@ public class Satellite : Emitter
     private void Start ()
     {
         _shield.SetActive(false);
-	}
+    }
 
     private void OnEnable()
     {
         _currentHP = _maxHP;
+        _outline = gameObject.GetComponentInChildren<cakeslice.Outline>(true);
     }
 
 
@@ -75,6 +76,10 @@ public class Satellite : Emitter
     {
         if (!_signalPlaneObject.activeSelf)
         {
+            if(_outline != null)
+            {
+                _outline.enabled = true;
+            }
             _signalPlaneObject.SetActive(true);
         }
     }
@@ -84,6 +89,10 @@ public class Satellite : Emitter
         if (_signalPlaneObject.activeSelf)
         {
             _signalPlaneObject.SetActive(false);
+            if (_outline != null)
+            {
+                _outline.enabled = false;
+            }
             if (_lastSatellite != null)
             {
                 _lastSatellite.OnGettingSignalEnd();

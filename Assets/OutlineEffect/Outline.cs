@@ -51,7 +51,7 @@ namespace cakeslice
         {
             enabled = false;
         }
-
+          
         void OnEnable()
         {
 			IEnumerable<OutlineEffect> effects = Camera.allCameras.AsEnumerable()

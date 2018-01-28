@@ -30,7 +30,7 @@ public class Rotator : MonoBehaviour {
             bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(mousePosition), out hitInfo, float.MaxValue, _layerToSelect);
             if (hit)
             {
-                _selected = hitInfo.collider.gameObject;
+                _selected = hitInfo.collider.transform.parent.gameObject;
             }
         }
         if (Input.GetMouseButtonUp(0))
