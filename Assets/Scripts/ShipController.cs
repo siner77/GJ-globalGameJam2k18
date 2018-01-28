@@ -274,6 +274,11 @@ public class ShipController : StateMachineController<ShipController>
         return _currentHP > 0.0f;
     }
 
+    public float GetHealthPercent()
+    {
+        return _currentHP / _maxHP;
+    }
+
     public virtual void Shoot()
     {
         RaycastHit hit;
