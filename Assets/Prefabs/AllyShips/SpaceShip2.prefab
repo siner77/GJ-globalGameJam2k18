@@ -234,11 +234,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AttackCooldown: 3
   AfterAttackWaitTime: 1
-  AttackDamage: 1
+  AttackDamage: 5
   Armor: 0
-  FlySpeed: 3
+  FlySpeed: 2.5
   RotateSpeed: 120
-  _maxHP: 1
+  _maxHP: 10
   _raycastOrigin: {fileID: 4033089322709658}
   _shootParticles: {fileID: 198480740118832554}
 --- !u!114 &114546111250595554
