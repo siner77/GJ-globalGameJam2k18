@@ -13,6 +13,7 @@ public class Healthbar : MonoBehaviour
     private void Start()
     {
         _shipController = GetComponentInParent<ShipController>();
+        _healthBar = GetComponent<SpriteRenderer>();
     }
 
     private void Update()
