@@ -121,11 +121,21 @@ namespace ShipStates
         {
             _timer = 0.0f;
             controller.NavMeshAgent.isStopped = true;
+            EnemyShipController enemyShip = (EnemyShipController)controller;
+            if(enemyShip != null)
+            {
+                enemyShip.FreezeObject.SetActive(true);
+            }
         }
 
         public void OnExit(ShipController controller)
         {
             controller.NavMeshAgent.isStopped = false;
+            EnemyShipController enemyShip = (EnemyShipController)controller;
+            if (enemyShip != null)
+            {
+                enemyShip.FreezeObject.SetActive(false);
+            }
         }
 
         public void OnUpdate(ShipController controller)
@@ -141,7 +151,13 @@ namespace ShipStates
 
 public class EnemyShipController : ShipController
 {
+    public GameObject FreezeObject;
     private Planet _planetToAttack;
+
+    private void Start()
+    {
+        FreezeObject.SetActive(false);
+    }
 
     public void SetPlanetToAttack(Planet planet)
     {

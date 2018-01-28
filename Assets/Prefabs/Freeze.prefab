@@ -23,7 +23,6 @@ GameObject:
   - component: {fileID: 23144701214088906}
   - component: {fileID: 33319204812729986}
   - component: {fileID: 114176289136268288}
-  - component: {fileID: 64529757960145486}
   m_Layer: 0
   m_Name: Freeze
   m_TagString: Untagged
@@ -84,20 +83,6 @@ MeshFilter:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1039530757469202}
-  m_Mesh: {fileID: 0}
---- !u!64 &64529757960145486
-MeshCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1039530757469202}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 0
-  m_CookingOptions: 14
-  m_SkinWidth: 0.01
   m_Mesh: {fileID: 0}
 --- !u!114 &114027033497493938
 MonoBehaviour:
