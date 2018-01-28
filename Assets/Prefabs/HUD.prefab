@@ -1155,7 +1155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Cooldown: 5
   _cooldownImage: {fileID: 114446412053578618}
-  _shieldTime: 0
+  _shieldTime: 2.5
 --- !u!114 &114979645859086868
 MonoBehaviour:
   m_ObjectHideFlags: 1

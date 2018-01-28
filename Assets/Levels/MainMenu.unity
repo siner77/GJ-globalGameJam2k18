@@ -392,7 +392,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c5fa88daed790b41b53cd8ed41d9e88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _firstLevelName: mergeScene
+  _firstLevelName: Level_0
 --- !u!114 &877898028
 MonoBehaviour:
   m_ObjectHideFlags: 0

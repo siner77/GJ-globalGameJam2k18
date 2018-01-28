@@ -9,8 +9,14 @@ EditorBuildSettings:
     path: Assets/Levels/MainMenu.unity
     guid: 29ea8db882be66545b011cd12143db50
   - enabled: 1
-    path: Assets/Levels/mergeScene.unity
-    guid: becba043723b6084e80809fa4932cde9
+    path: Assets/Levels/FinalLevels/Level_0.unity
+    guid: c91e73efff3521049819d4373d1b3acb
   - enabled: 1
-    path: Assets/Levels/mergeScene 1.unity
-    guid: 4d88be510695991478f022449933f907
+    path: Assets/Levels/FinalLevels/Level_1.unity
+    guid: ddd9c16bb8a19c044bb83733cf55d3cf
+  - enabled: 1
+    path: Assets/Levels/FinalLevels/Level_2.unity
+    guid: 5c9824a225706174cb2886dcf56eba39
+  - enabled: 1
+    path: Assets/Levels/FinalLevels/Level_3.unity
+    guid: 6dc87b15200b346408443b26ad002d95

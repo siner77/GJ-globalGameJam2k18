@@ -107,6 +107,11 @@ public class Emitter : MonoBehaviour
         }
         else
         {
+            if(_lastSatellite != null)
+            {
+                _lastSatellite.OnGettingSignalEnd();
+                _lastSatellite = null;
+            }
             SetSignalPlaneObject(_signalRay.direction, 30.0f);
         }
 
